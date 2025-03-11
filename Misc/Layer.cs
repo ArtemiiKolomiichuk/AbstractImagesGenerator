@@ -34,6 +34,17 @@ namespace AbstractImagesGenerator.Misc
                 inheritedSettings = [.. inheritedSettings.Select(x => x.Copy)]
             };
         }
+
+        public static Drawing Random()
+        {
+            Random random = new();
+            return new Drawing
+            {
+                title = random.Next().ToString(),
+                type = "Drawing",
+                settings = LayerSetting.RandomSettings()
+            };
+        }
     }
 
     public class Blending : Layer
@@ -52,6 +63,18 @@ namespace AbstractImagesGenerator.Misc
                 hereditarySettings = [.. hereditarySettings.Select(x => x.Copy)],
                 subLayers = [.. subLayers.Select(x => x.Copy)],
                 inheritedSettings = [.. inheritedSettings.Select(x => x.Copy)]
+            };
+        }
+
+        public static Blending Random()
+        {
+            Random random = new();
+            return new Blending
+            {
+                title = random.Next().ToString(),
+                type = "Blending",
+                settings = LayerSetting.RandomSettings(),
+                hereditarySettings = LayerSetting.RandomSettings()
             };
         }
     }

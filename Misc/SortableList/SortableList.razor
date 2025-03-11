@@ -13,16 +13,9 @@
             @SortableItemTemplate(item)
         }
     }
-    @if (Footer is not null)
-    {
-        @Footer
-    }
 </div>
 
 @code {
-
-
-
     [Parameter]
     public RenderFragment<T>? SortableItemTemplate { get; set; }
 

@@ -1,9 +1,9 @@
-﻿<div class="@(!IsFinalBlending && Layer is Blending ? "layer-card blending" : "layer-card")" style="@(IsFinalBlending ? "padding: 0.5rem; background-color: #f7f7fb;min-width:40vw" : "")">
-    <div style="display: flex; justify-content: space-between;">
+﻿<div class="@(!IsFinalBlending && Layer is Blending ? "layer-card blending" : "layer-card")" style="@(IsFinalBlending ? "padding: 0.5rem; padding-top: 0.3rem; background-color: #f7f7fb; min-width:40vw" : "")">
+    <div class="card-header">
         <div style="display: flex; align-items: center;">
             @if (!IsFinalBlending)
             {
-                <div class="drag-handle" style="cursor: grab; -webkit-user-select: none;">
+                <div class="drag-handle" style="cursor: grab; -webkit-user-select: none; margin-right: 0.1rem;">
                     <Ico Icon="@Icons.Drag" Size="2" Color="#2e2e2e" />
                 </div>
             }
@@ -11,7 +11,7 @@
             {
                 <div style="width:0.3rem"></div>
             }
-            <div style="display:flex; flex-direction: column;">
+            <div style="display:flex; flex-direction: column; margin-top: -5px;">
                 @if (!editingTitle)
                 {
                     <div style="display: flex; align-items:center;height: 1.4rem; margin-top: 3px;" @onclick="EditTitle">
@@ -31,9 +31,13 @@
                 </div>
             </div>
         </div>
-        <div>
-            @if (IsFinalBlending)
+        <div style="display:flex">
+            @if (IsFinalBlending && Layer is Blending _blending)
             {
+                <!--ADD LAYER-->
+                <span @onclick="() => {_blending.subLayers.Add(Blending.Random()); StateHasChanged();}" style="margin-right: 6px;">
+                    <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
+                </span>
                 <!--CHANGE BLENDING TYPE-->
                 <span @onclick="() => { Update();}">
                     <Ico Class="icon-button violet" Icon="@Icons.Customize" Size="2" Color="#7160e8" />
@@ -41,13 +45,20 @@
             }
             else
             {
+                @if (Layer is Blending __blending)
+                {
+                    <!--ADD LAYER-->
+                    <span @onclick="() => {__blending.subLayers.Add(Drawing.Random()); StateHasChanged();}" style="margin-right: 6px;">
+                        <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
+                    </span>
+                }
+                <!--DUPLICATE-->
+                <span @onclick="() => {ParentList!.Insert(ParentList.IndexOf(Layer) + 1, Layer.Copy); Update();}" style="margin-right: 5px; margin-top: 1px;">
+                    <Ico Class="icon-button violet" Icon="@Icons.DuplicateLayer" Size="2" Color="#7160e8" />
+                </span>
                 <!--DELETE-->
                 <span @onclick="() => {ParentList!.Remove(Layer); Update();}">
                     <Ico Class="icon-button red" Icon="@Icons.Delete" Size="2" Color="#f06270" />
-                </span>
-                <!--DUPLICATE-->
-                <span @onclick="() => {ParentList!.Insert(ParentList.IndexOf(Layer) + 1, Layer.Copy); Update();}">
-                    <Ico Class="icon-button violet" Icon="@Icons.DuplicateLayer" Size="2" Color="#7160e8" />
                 </span>
             }
         </div>
@@ -55,8 +66,7 @@
     <!-- -->
     @if(Layer.settings.Count > 0 || Layer.inheritedSettings.Count > 0)
     {
-        <div style="padding-left: 3em;
-                padding-top: 0.5em;">
+        <div class="@(IsFinalBlending ? "blend-settings" : "settings")">
             @foreach(var setting in Layer.settings)
             {
                 var st = setting;
@@ -72,9 +82,9 @@
     <!-- -->
     @if (Layer is Blending blending)
     {
-        <SortableList Class="inner-list" Id="@blending.Id" Group="Layers" Handle=".drag-handle" Items="blending.subLayers" OnUpdate="@SortList" OnRemove="x => {LayerListsController.Move(x); Update();}" Context="item">
+        <SortableList Class="@(IsFinalBlending ? "inner-list first" : "inner-list")" Id="@blending.Id" Group="Layers" Handle=".drag-handle" Items="blending.subLayers" OnUpdate="(x) => {SortList(x);StateHasChanged();}" OnRemove="x => {LayerListsController.Move(x); Update();}" Context="item">
             <SortableItemTemplate>
-                <LayerCard Layer="item" ParentList="blending.subLayers" Update="StateHasChanged" />
+                <LayerCard Layer="item" ParentList="blending.subLayers" Update="Update" />
             </SortableItemTemplate>
             <Footer>
                 <div style="display: flex; flex-direction: row-reverse;">
