@@ -1,0 +1,44 @@
+﻿@switch (Setting.type)
+{
+    case LayerSettingType.Color:
+        <div style="display: flex; align-items:center">
+            <div style="padding-right:1em">
+                @Setting.title
+            </div>
+            <div style="display: flex; align-items: center;">
+                <input type="color" value="@(Setting.value?.ToString() ?? string.Empty)" @oninput="(e) => { Setting.value = e.Value.ToString(); Update(); }" class="color-input-row" />
+                <span @onclick="() => Setting.value = RandomColor()" style="height: 2rem;-webkit-user-select: none;">
+                    <Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
+                </span>
+            </div>
+        </div>
+        break;
+    case LayerSettingType.Angle:
+        <div style="display: flex; align-items:center">
+            <div style="padding-right:1em">
+                @Setting.title
+            </div>
+            <div style="padding-right:0.4em; width: 1.5rem">
+                @(Setting.value?.ToString() ?? "0")
+            </div>
+            <div>
+                <input type="range" min="-180" max="180" step="1" value="@(Setting.value?.ToString() ?? string.Empty)" 
+                    @oninput="(e) => { Setting.value = e.Value.ToString(); Update(); }" 
+                    style="margin: 0.4rem;width: 6rem;" />
+            </div>
+        </div>
+        break;
+}
+@code {
+    [Parameter]
+    public LayerSetting Setting { get; set; }
+
+    [Parameter]
+    public Action Update { get; set; }
+
+    private static string RandomColor()
+    {
+        var random = new Random();
+        return $"#{random.Next(0x1000000):X6}";
+    }
+}

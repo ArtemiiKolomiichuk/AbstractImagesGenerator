@@ -5,21 +5,36 @@
                                     align-items: center;">
         <div style="display:flex; flex-direction: column;">
             <img id="main-img" style="width:30vw; height: auto" src="R.jpg" />
-            
+
         </div>
-        
         <div style="width:2rem; height: 2rem"/>
-        <LayerList Layers="[..Layers]" />
+        <div class="layers-list" style="display:flex; flex-direction: column;">
+            <LayerCard Layer="blending" Update="StateHasChanged" ParentList="null"/>
+        </div>
     </div>
 </div>
 
 
 @code{
-    List<Layer> Layers { get; set; } = [
-        new() { title = "1", type="Perlin Noise", settings = 
-            [
-                new() { type = LayerSettingType.Color, title = "Color" }, 
-                new() { type = LayerSettingType.Angle, title = "Rotation" }
-            ] },
-        new() { title = "2" }, new() { title = "3" }];
+    public static readonly Blending blending = new()
+    {
+        title = "Final Blending",
+        type = "Opacity Layering",
+        settings = [
+            new(){
+                title = "Rotation Transfrom",
+                type = LayerSettingType.Angle,
+                value = 35
+            }
+        ],
+        inheritedSettings = [],
+        hereditarySettings = [
+            new(){
+                title = "Opacity (inh)",
+                type = LayerSettingType.Angle,
+                value = 100
+            }
+        ],
+        subLayers = []
+    };
 }

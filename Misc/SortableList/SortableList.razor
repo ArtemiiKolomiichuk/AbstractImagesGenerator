@@ -13,6 +13,10 @@
             @SortableItemTemplate(item)
         }
     }
+    @if (Footer is not null)
+    {
+        @Footer
+    }
 </div>
 
 @code {
@@ -22,14 +26,17 @@
     [Parameter]
     public RenderFragment<T>? SortableItemTemplate { get; set; }
 
+    [Parameter]
+    public RenderFragment? Footer { get; set; }
+
     [Parameter, AllowNull]
     public List<T> Items { get; set; }
 
     [Parameter]
-    public EventCallback<(int oldIndex, int newIndex)> OnUpdate { get; set; }
+    public EventCallback<(int oldIndex, int newIndex, string toId, string fromId)> OnUpdate { get; set; }
 
     [Parameter]
-    public EventCallback<(int oldIndex, int newIndex)> OnRemove { get; set; }
+    public EventCallback<(int oldIndex, int newIndex, string toId, string fromId)> OnRemove { get; set; }
 
     [Parameter]
     public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -71,17 +78,17 @@
     }
 
     [JSInvokable]
-    public void OnUpdateJS(int oldIndex, int newIndex)
+    public void OnUpdateJS(int oldIndex, int newIndex, string toId, string fromId)
     {
         // invoke the OnUpdate event passing in the oldIndex and the newIndex
-        OnUpdate.InvokeAsync((oldIndex, newIndex));
+        OnUpdate.InvokeAsync((oldIndex, newIndex, toId, fromId));
     }
 
     [JSInvokable]
-    public void OnRemoveJS(int oldIndex, int newIndex)
+    public void OnRemoveJS(int oldIndex, int newIndex, string toId, string fromId)
     {
         // remove the item from the list
-        OnRemove.InvokeAsync((oldIndex, newIndex));
+        OnRemove.InvokeAsync((oldIndex, newIndex, toId, fromId));
     }
 
     public void Dispose() => selfReference?.Dispose();

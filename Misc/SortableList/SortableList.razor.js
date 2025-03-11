@@ -16,7 +16,7 @@ export function init(id, group, pull, put, sort, handle, filter, component, forc
             event.to.insertBefore(event.item, (Array.from(event.to.childNodes).filter(node => node.nodeType !== Node.COMMENT_NODE))[event.oldIndex]);
 
             // Notify .NET to update its model and re-render
-            component.invokeMethodAsync('OnUpdateJS', event.oldDraggableIndex, event.newDraggableIndex);
+            component.invokeMethodAsync('OnUpdateJS', event.oldDraggableIndex, event.newDraggableIndex, event.to.id, event.from.id);
         },
         onRemove: (event) => {
             if (event.pullMode === 'clone') {
@@ -25,10 +25,10 @@ export function init(id, group, pull, put, sort, handle, filter, component, forc
             }
 
             event.item.remove();
-            event.from.insertBefore(event.item, (Array.from(event.to.childNodes).filter(node => node.nodeType !== Node.COMMENT_NODE))[event.oldIndex]);
+            event.from.insertBefore(event.item, (Array.from(event.from.childNodes).filter(node => node.nodeType !== Node.COMMENT_NODE))[event.oldIndex]);
 
             // Notify .NET to update its model and re-render
-            component.invokeMethodAsync('OnRemoveJS', event.oldDraggableIndex, event.newDraggableIndex);
+            component.invokeMethodAsync('OnRemoveJS', event.oldDraggableIndex, event.newDraggableIndex, event.to.id, event.from.id);
         }
     });
 }
