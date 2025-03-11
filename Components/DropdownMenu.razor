@@ -1,0 +1,96 @@
+﻿<style>
+    .dropbtn {
+        background-color: #4fad53;
+        color: white;
+        padding: 0.5rem 0.9rem;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 0.5rem;
+        border-radius: 0.9rem;
+    }
+
+    .dropdown {
+    position: relative;
+    display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: -webkit-fit-content;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+    .dropdown-content button {
+        width: -webkit-fill-available;
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        overflow: auto;
+    }
+
+    .dropdown-content button:hover {background-color: #f1f1f1}
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown:hover .dropbtn {
+        background-color: #3e8e41;
+    }
+
+    .option{
+        padding-left: 1rem;
+        border-radius: 0.4em;
+        transition: background-color 0.2s;
+        -webkit-user-select: none;
+    }
+
+    .option:hover{
+        background-color: #ededed;
+        cursor: default;
+    }
+    .key{
+        -webkit-user-select: none;
+    }
+    .l-1{
+        margin-left:3px;
+    }
+</style>
+
+<div class="dropdown">
+    <button class="dropbtn" style="display:flex; align-content:center">
+        @Text
+        <Ico Class="l-1" Icon="@Icons.Add" Color="white" Size="1.4"/>
+    </button>
+    <div class="dropdown-content">
+        @foreach(var (key, options) in Options)
+        {
+            <div class="key">
+                <b>@key</b>
+            </div>
+            @foreach(var option in options)
+            {
+                var (k, o) = (key, option);
+                <div class="option" @onclick="() => OnSelect?.Invoke(k,o)">
+                    @option
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<(string, List<string>)> Options { get; set; } = [];
+
+    [Parameter]
+    public Action<string, string>? OnSelect { get; set; }
+
+    [Parameter]
+    public string Text { get; set; } = "";
+}

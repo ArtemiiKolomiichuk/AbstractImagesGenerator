@@ -1,0 +1,114 @@
+﻿<div class="layer-card">
+    <div style="display: flex; justify-content: space-between;">
+        <div style="display: flex; align-items: center;">
+            <div class="drag-handle" style="cursor: grab; -webkit-user-select: none;">
+                <Ico Icon="@Icons.Drag" Size="2" Color="#2e2e2e" />
+            </div>
+            <div style="display:flex; flex-direction: column;">
+                @if (!editingTitle)
+                {
+                    <div style="display: flex; align-items:center;height: 1.4rem; margin-top: 3px;" @onclick="EditTitle">
+                        @Layer.title
+                        <Ico Class="icon-button" Icon="@Icons.Edit" Size="1.4" Color="#757575" />
+                    </div>
+                }
+                else
+                {
+                    <div style="display: flex; align-items:center;height: 1.4rem; margin-top: 3px;" @onfocusout="() => {editingTitle = false; StateHasChanged();}">
+                        <input @ref="editTitleInput" type="text" @bind-value="Layer.title" @onsubmit="() => { editingTitle = false; StateHasChanged(); }" @onfocusout="() => { editingTitle = false; StateHasChanged(); }">
+                        <span @onclick="() => { editingTitle = false; StateHasChanged(); }" style="height: 1.4rem;">
+                            <Ico Class="icon-button" Icon="@Icons.Save" Size="1.4" Color="#757575" />
+                        </span>
+                    </div>
+                }
+
+                <div style="margin-top: -5px; color:#545454">
+                    <i>@Layer.type</i>
+                </div>
+            </div>
+
+        </div>
+        <div>
+            <span @onclick="() => {List.Remove(Layer); Update();}">
+                <Ico Class="icon-button red" Icon="@Icons.Delete" Size="2" Color="#f06270" />
+            </span>
+            <span @onclick="() => {List.Insert(List.IndexOf(Layer) + 1, Layer.Copy); Update();}">
+                <Ico Class="icon-button violet" Icon="@Icons.DuplicateLayer" Size="2" Color="#7160e8" />
+            </span>
+        </div>
+    </div>
+    <!-- -->
+    <div style="padding-left: 3em;
+                padding-top: 0.5em;">
+        @foreach(var setting in Layer.settings)
+        {
+            var st = setting;
+            switch (setting.type)
+            {
+                case LayerSettingType.Color:
+                    <div style="display: flex; align-items:center">
+                        <div style="padding-right:1em">
+                            @setting.title
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <input type="color" value="@(setting.value?.ToString() ?? string.Empty)" @oninput="(e) => { setting.value = e.Value.ToString(); Update(); }" class="color-input-row" />
+                            <span @onclick="() => st.value = RandomColor()" style="height: 2rem;-webkit-user-select: none;">
+                                <Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
+                            </span>
+                        </div>
+                    </div>
+                    break;
+                case LayerSettingType.Angle:
+                    <div style="display: flex; align-items:center">
+                        <div style="padding-right:1em">
+                            @setting.title
+                        </div>
+                        <div style="padding-right:0.4em; width: 1.5rem">
+                            @(setting.value?.ToString() ?? "0")
+                        </div>
+                        <div>
+                            <input type="range" min="-180" max="180" step="1" value="@(setting.value?.ToString() ?? string.Empty)" @oninput="(e) => { setting.value = e.Value.ToString(); Update(); }" class="color-input-row" />
+                        </div>
+                    </div>
+                    break;
+            }
+        }
+    </div>
+
+</div>
+
+@inject IJSRuntime JSRuntime
+@code {
+    [Parameter]
+    public Layer Layer { get; set; }
+
+    [Parameter]
+    public List<Layer> List { get; set; }
+
+    [Parameter]
+    public Action Update { get; set; }
+
+    private bool editingTitle = false;
+
+    private ElementReference? editTitleInput;
+
+    public async Task EditTitle()
+    {
+        editingTitle = true; 
+        StateHasChanged();
+        await Task.Delay(10);
+        if (editTitleInput == null || editTitleInput.Value.Id == null) return;
+        await editTitleInput.Value.FocusAsync();
+    }
+
+    private string RandomColor()
+    {
+        var random = new Random();
+        return $"#{random.Next(0x1000000):X6}";
+    }
+
+    public abstract class L();
+
+    public class LA : L;
+    public class LB : L;
+}

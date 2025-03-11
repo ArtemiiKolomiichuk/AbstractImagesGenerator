@@ -1,0 +1,60 @@
+﻿<style>
+    .glare-container {
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+    }
+
+    .glare {
+        position: absolute;
+        top: -150%;
+        left: -150%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 50%);
+        transform: rotate(45deg);
+        mask-size: 100%;
+        mask-position: -50%;
+        animation: shine 1.6s linear infinite;
+    }
+
+    @@keyframes shine {
+        0% {
+            top: -150%;
+            left: -150%;
+        }
+        100% {
+            top: 150%;
+            left: 150%;
+        }
+    }
+
+    @@keyframes opacityAppear{
+        0%   {opacity: 0;}
+        100% {opacity: 1;}
+    }
+
+    @@keyframes opacityHide{
+        0%   {opacity: 1;}
+        100% {opacity: 0;}
+    }
+</style>
+
+
+
+<div class="glare-container" style="width: fit-content; height: fit-content">
+    <div id="main-image" style="width: fit-content; height: fit-content">
+        <img src="DarkBlueLight.jpg" />
+    </div>
+    <div class="glare"></div>
+</div>
+
+@inject IJSRuntime JSRuntime
+@code {
+    bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+}

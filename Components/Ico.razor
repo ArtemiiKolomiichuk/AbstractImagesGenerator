@@ -1,0 +1,17 @@
+﻿@((MarkupString)(Icon.Replace("height=\"24px\"", $"height=\"{SizeString}\" class=\"{Class}\"").Replace("width=\"24px\"", $"width=\"{SizeString}\"").Replace("\"#\"", $"\"{Color}\"")))
+
+@code {
+    [Parameter]
+    public string Icon { get; set; }
+
+    [Parameter]
+    public double? Size { get; set; } = null;
+
+    private string SizeString => Size.HasValue ? $"{Size.Value.ToString().Replace(',', '.')}em" : "32px";
+
+    [Parameter]
+    public string Color { get; set; } = "black";
+
+    [Parameter]
+    public string Class { get; set; } = "";
+}

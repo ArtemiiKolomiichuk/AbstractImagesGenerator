@@ -1,0 +1,14 @@
+﻿<button class="bttn @(IsOn ? "secondary" : "filled")" @onclick="() => IsOn = true">
+    @ChildContent
+</button>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool IsOn { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsOnChanged { get; set; }
+}

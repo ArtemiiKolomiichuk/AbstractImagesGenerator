@@ -1,0 +1,25 @@
+﻿@page "/"
+<div>
+    <div class="image-block" style="display: flex;
+                                    justify-content: center;
+                                    align-items: center;">
+        <div style="display:flex; flex-direction: column;">
+            <img id="main-img" style="width:30vw; height: auto" src="R.jpg" />
+            
+        </div>
+        
+        <div style="width:2rem; height: 2rem"/>
+        <LayerList Layers="[..Layers]" />
+    </div>
+</div>
+
+
+@code{
+    List<Layer> Layers { get; set; } = [
+        new() { title = "1", type="Perlin Noise", settings = 
+            [
+                new() { type = LayerSettingType.Color, title = "Color" }, 
+                new() { type = LayerSettingType.Angle, title = "Rotation" }
+            ] },
+        new() { title = "2" }, new() { title = "3" }];
+}
