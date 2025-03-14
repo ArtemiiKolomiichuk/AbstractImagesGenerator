@@ -15,19 +15,19 @@
                 @if (!editingTitle)
                 {
                     <div style="display: flex; align-items:center;height: 1.4rem; margin-top: 3px;" @onclick="EditTitle">
-                        @Layer.title
+                        @Layer.Title
                         <Ico Class="icon-button" Icon="@Icons.Edit" Size="1.4" Color="#757575" />
                     </div>
                 }
                 else
                 {
                     <div style="display: flex; align-items:center;height: 1.4rem; margin-top: 3px;" @onfocusout="() => {editingTitle = false; StateHasChanged();}">
-                        <input @ref="editTitleInput" type="text" @bind-value="Layer.title" @onsubmit="() => { editingTitle = false; StateHasChanged(); }" @onfocusout="() => { editingTitle = false; StateHasChanged(); }">
+                        <input @ref="editTitleInput" type="text" @bind-value="Layer.Title" @onsubmit="() => { editingTitle = false; StateHasChanged(); }" @onfocusout="() => { editingTitle = false; StateHasChanged(); }">
                     </div>
                 }
 
                 <div style="margin-top: -5px; color:#545454">
-                    <i>@Layer.type</i>
+                    <i>@Layer.Type</i>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@
             @if (IsFinalBlending && Layer is Blending _blending)
             {
                 <!--ADD LAYER-->
-                <span @onclick="() => {_blending.subLayers.Add(Blending.Random()); StateHasChanged();}" style="margin-right: 6px;">
+                <span @onclick="() => { StateHasChanged();}" style="margin-right: 6px;">
                     <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
                 </span>
                 <!--CHANGE BLENDING TYPE-->
@@ -48,7 +48,7 @@
                 @if (Layer is Blending __blending)
                 {
                     <!--ADD LAYER-->
-                    <span @onclick="() => {__blending.subLayers.Add(Drawing.Random()); StateHasChanged();}" style="margin-right: 6px;">
+                    <span @onclick="() => { StateHasChanged();}" style="margin-right: 6px;">
                         <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
                     </span>
                 }

@@ -1,13 +1,20 @@
 ﻿#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 #pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace AbstractImagesGenerator.Misc
 {
     public abstract class Layer
     {
-        public string title;
-        public string type;
+        [JsonProperty("visible_name")]
+        public string Title { get; set; }
+
+        [JsonProperty("name")]
+        public string Type { get; set; }
+
         public List<LayerSetting> settings = [];
         public List<LayerSetting> inheritedSettings = [];
 
@@ -28,21 +35,8 @@ namespace AbstractImagesGenerator.Misc
         {
             get => new()
             {
-                title = title,
-                type = type,
                 settings = [.. settings.Select(x => x.Copy)],
                 inheritedSettings = [.. inheritedSettings.Select(x => x.Copy)]
-            };
-        }
-
-        public static Drawing Random()
-        {
-            Random random = new();
-            return new Drawing
-            {
-                title = random.Next().ToString(),
-                type = "Drawing",
-                settings = LayerSetting.RandomSettings()
             };
         }
     }
@@ -58,78 +52,105 @@ namespace AbstractImagesGenerator.Misc
             get => new()
             {
                 Id = Guid.NewGuid().ToString(),
-                title = title,
-                type = type,
                 settings = [.. settings.Select(x => x.Copy)],
                 hereditarySettings = [.. hereditarySettings.Select(x => x.Copy)],
                 subLayers = [.. subLayers.Select(x => x.Copy)],
                 inheritedSettings = [.. inheritedSettings.Select(x => x.Copy)]
             };
         }
-
-        public static Blending Random()
-        {
-            Random random = new();
-            return new Blending
-            {
-                title = random.Next().ToString(),
-                type = "Blending",
-                settings = LayerSetting.RandomSettings(),
-                hereditarySettings = LayerSetting.RandomSettings()
-            };
-        }
     }
 
 
+    [JsonObject]
     public class LayerSetting
     {
-        public string title;
-        public LayerSettingType type;
-        public object? value;
+        [JsonProperty("visible_name")]
+        public string Title { get; set; }
+        [JsonProperty("name")]
+        public string Type { get; set; }
+        [JsonProperty("data_type")]
+        public PropertyValueType DataType { get; set; }
+        [JsonProperty("visible_type")]
+        public PropertyDisplayType VisibleType { get; set; }
+        [JsonProperty("default")]
+        public SettingValue? Value { get; set; }
+        [JsonProperty("min_value")]
+        public object? MinValue { get; set; }
+        [JsonProperty("max_value")]
+        public object? MaxValue { get; set; }
+        [JsonProperty("possible_values")]
+        public List<object>? PossibleValues { get; set; }
+        [JsonProperty("min_length")]
+        public int? MinLength { get; set; }
+        [JsonProperty("max_length")]
+        public int? MaxLength { get; set; }
+        [JsonProperty("min_count")]
+        public int? MinCount { get; set; }
+        [JsonProperty("max_count")]
+        public int? MaxCount { get; set; }
 
+        [JsonIgnore]
         public LayerSetting Copy
         {
             get
             {
                 LayerSetting setting = new()
                 {
-                    title = title,
-                    type = type,
-                    value = value
+                    Title = Title,
+                    Type = Type,
+                    DataType = DataType,
+                    VisibleType = VisibleType,
+                    Value = Value,
+                    MinValue = MinValue,
+                    MaxValue = MaxValue,
+                    PossibleValues = PossibleValues,
+                    MinLength = MinLength,
+                    MaxLength = MaxLength,
+                    MinCount = MinCount,
+                    MaxCount = MaxCount
                 };
                 return setting;
             }
         }
 
-        public static List<LayerSetting> RandomSettings()
-        {
-            Random random = new();
-            List<LayerSetting> list = [];
-            for (int i = 0; i < random.Next(4); i++)
-            {
-                list.Add(new LayerSetting
-                {
-                    title = random.Next().ToString(),
-                    type = (LayerSettingType)random.Next(6),
-                });
-            }
-            return list;
-        }
-
-        public static bool operator ==(LayerSetting a, LayerSetting b) => a.title == b.title && a.type == b.type;
-        public static bool operator !=(LayerSetting a, LayerSetting b) => a.title != b.title || a.type != b.type;
+        public static bool operator ==(LayerSetting a, LayerSetting b) => a.Type == b.Type && a.DataType == b.DataType && a.VisibleType == b.VisibleType && a.MinValue == b.MinValue && a.MaxValue == b.MaxValue && a.PossibleValues == b.PossibleValues && a.MinLength == b.MinLength && a.MaxLength == b.MaxLength && a.MinCount == b.MinCount && a.MaxCount == b.MaxCount;
+        public static bool operator !=(LayerSetting a, LayerSetting b) => !(a == b);
     }
 
-    public enum LayerSettingType
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum PropertyValueType
     {
-        PositiveNumber,
-        Number,
-        Integer,
+        [EnumMember(Value = "integer_tuple")]
+        IntTuple,
+        [EnumMember(Value = "float_tuple")]
+        FloatTuple,
+        [EnumMember(Value = "integer")]
+        Int,
+        [EnumMember(Value = "float")]
+        Float,
+        [EnumMember(Value = "colors")]
+        Colors,
+        [EnumMember(Value = "enum_list")]
+        EnumList,
+        [EnumMember(Value = "bool")]
+        Bool
+    }
 
-        Scale = PositiveNumber,
-        Angle = 3,
-
-        Color,
-        Range
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum PropertyDisplayType
+    {
+        [EnumMember(Value = "field")]
+        Field,
+        [EnumMember(Value = "slider")]
+        Slider,
+        [EnumMember(Value = "range_slider")]
+        RangeSlider,
+        [EnumMember(Value = "checkbox")]
+        Checkbox,
+        [EnumMember(Value = "colors")]
+        Colors,
+        [EnumMember(Value = "selector")]
+        Dropdown
     }
 }
