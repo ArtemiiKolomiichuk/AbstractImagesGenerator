@@ -91,6 +91,12 @@ namespace AbstractImagesGenerator.Misc
                 case StringListValue stringListValue:
                     serializer.Serialize(writer, stringListValue.Values);
                     break;
+                case IntRecord intRecord:
+                    serializer.Serialize(writer, intRecord.Value);
+                    break;
+                case FloatRecord floatRecord:
+                    serializer.Serialize(writer, floatRecord.Value);
+                    break;
                 default:
                     throw new JsonSerializationException("Unknown ValueRecord type");
             }

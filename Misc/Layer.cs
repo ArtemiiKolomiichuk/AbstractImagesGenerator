@@ -2,7 +2,6 @@
 #pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace AbstractImagesGenerator.Misc
@@ -15,16 +14,18 @@ namespace AbstractImagesGenerator.Misc
         [JsonProperty("name")]
         public string Type { get; set; }
 
-        public List<LayerSetting> settings = [];
-        public List<LayerSetting> inheritedSettings = [];
+        [JsonProperty("parameters")]
+        public List<LayerSetting> Settings { get; set; } = [];
+        public List<LayerSetting> InheritedSettings { get; set; } = [];
 
+        [JsonIgnore]
         public virtual Layer Copy { get; }
 
         public void UpdateInheritedSettings(List<LayerSetting> newSettings)
         {
-            if (inheritedSettings.Count != newSettings.Count || inheritedSettings.Select((x, i) => x != newSettings[i]).Any())
+            if (InheritedSettings.Count != newSettings.Count || InheritedSettings.Select((x, i) => x != newSettings[i]).Any())
             {
-                inheritedSettings = [..newSettings.Select(x => x.Copy)];
+                InheritedSettings = [..newSettings.Select(x => x.Copy)];
             }
         }
     }
@@ -35,8 +36,10 @@ namespace AbstractImagesGenerator.Misc
         {
             get => new()
             {
-                settings = [.. settings.Select(x => x.Copy)],
-                inheritedSettings = [.. inheritedSettings.Select(x => x.Copy)]
+                Title = Title,
+                Type = Type,
+                Settings = [.. Settings.Select(x => x.Copy)],
+                InheritedSettings = [.. InheritedSettings.Select(x => x.Copy)]
             };
         }
     }
@@ -44,22 +47,24 @@ namespace AbstractImagesGenerator.Misc
     public class Blending : Layer
     {
         public string Id { get; private init; } = Guid.NewGuid().ToString();
-        public List<LayerSetting> hereditarySettings = [];
-        public List<Layer> subLayers = [];
+        [JsonProperty("blending_parameters")]
+        public List<LayerSetting> HereditarySettings { get; set; } = [];
+        public List<Layer> SubLayers { get; set; } = [];
 
         public override Blending Copy
         {
             get => new()
             {
                 Id = Guid.NewGuid().ToString(),
-                settings = [.. settings.Select(x => x.Copy)],
-                hereditarySettings = [.. hereditarySettings.Select(x => x.Copy)],
-                subLayers = [.. subLayers.Select(x => x.Copy)],
-                inheritedSettings = [.. inheritedSettings.Select(x => x.Copy)]
+                Title = Title,
+                Type = Type,
+                Settings = [.. Settings.Select(x => x.Copy)],
+                InheritedSettings = [.. InheritedSettings.Select(x => x.Copy)],
+                HereditarySettings = [.. HereditarySettings.Select(x => x.Copy)],
+                SubLayers = [.. SubLayers.Select(x => x.Copy)]
             };
         }
     }
-
 
     [JsonObject]
     public class LayerSetting
@@ -100,7 +105,16 @@ namespace AbstractImagesGenerator.Misc
                     Type = Type,
                     DataType = DataType,
                     VisibleType = VisibleType,
-                    Value = Value,
+                    Value = Value switch
+                    {
+                        IntRecord intRecord => new IntRecord(intRecord.Value),
+                        FloatRecord floatRecord => new FloatRecord(floatRecord.Value),
+                        BoolValue boolValue => new BoolValue(boolValue.Value),
+                        IntTupleValue intTupleValue => new IntTupleValue(intTupleValue.Values),
+                        FloatTupleValue floatTupleValue => new FloatTupleValue(floatTupleValue.Values),
+                        StringListValue stringListValue => new StringListValue([..stringListValue.Values]),
+                        _ => null
+                    },
                     MinValue = MinValue,
                     MaxValue = MaxValue,
                     PossibleValues = PossibleValues,
