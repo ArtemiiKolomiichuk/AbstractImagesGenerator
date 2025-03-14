@@ -29,7 +29,7 @@
     public EventCallback<(int oldIndex, int newIndex, string toId, string fromId)> OnUpdate { get; set; }
 
     [Parameter]
-    public EventCallback<(int oldIndex, int newIndex, string toId, string fromId)> OnRemove { get; set; }
+    public EventCallback<(int oldIndex, int newIndex, string toId, string fromId)> OnMove { get; set; }
 
     [Parameter]
     public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -81,7 +81,7 @@
     public void OnRemoveJS(int oldIndex, int newIndex, string toId, string fromId)
     {
         // remove the item from the list
-        OnRemove.InvokeAsync((oldIndex, newIndex, toId, fromId));
+        OnMove.InvokeAsync((oldIndex, newIndex, toId, fromId));
     }
 
     public void Dispose() => selfReference?.Dispose();

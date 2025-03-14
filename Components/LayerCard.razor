@@ -70,49 +70,26 @@
             @foreach(var setting in Layer.settings)
             {
                 var st = setting;
-                <SettingRow Setting="st" Update="Update"/>
+                <SettingRow Setting="st" Update="StateHasChanged"/>
             }
             @foreach (var setting in Layer.inheritedSettings)
             {
                 var st = setting;
-                <SettingRow Setting="st" Update="Update" />
+                <SettingRow Setting="st" Update="StateHasChanged" />
             }
         </div>
     }
     <!-- -->
     @if (Layer is Blending blending)
     {
-        <SortableList Class="@(IsFinalBlending ? "inner-list first" : "inner-list")" Id="@blending.Id" Group="Layers" Handle=".drag-handle" Items="blending.subLayers" OnUpdate="(x) => {SortList(x);StateHasChanged();}" OnRemove="x => {LayerListsController.Move(x); Update();}" Context="item">
+        <SortableList Class="@(IsFinalBlending ? "inner-list first" : "inner-list")" 
+            Id="@blending.Id" Group="Layers" 
+            Handle=".drag-handle" Items="blending.subLayers" 
+            OnUpdate="(x) => {SortList(x);StateHasChanged();}" 
+            OnMove="x => {LayerListsController.Move(x); Update();}" Context="item">
             <SortableItemTemplate>
                 <LayerCard Layer="item" ParentList="blending.subLayers" Update="Update" />
             </SortableItemTemplate>
-            <Footer>
-                <div style="display: flex; flex-direction: row-reverse;">
-                    <DropdownMenu Text="Add Drawing" Options="@([("Noise", ["Perlin Noise", "Random Noise", "Simple Noise"]), ("Shapes", ["Triangles", "Squares"])])" 
-                    OnSelect="((key, option) => {
-                                blending.subLayers.Add(new Drawing() 
-                                { 
-                                    title = option, 
-                                    type = key, 
-                                    settings = LayerSetting.RandomSettings(), 
-                                    inheritedSettings = [..blending.hereditarySettings.Select(s => s.Copy)]
-                                });
-                                StateHasChanged();
-                        })" />
-
-                    <DropdownMenu Text="Add Blending" Options="@([("Blending", ["Normal", "Multiply", "Screen", "Overlay", "Darken", "Lighten"])])"
-                    OnSelect="((key, option) => {
-                                blending.subLayers.Add(new Blending() 
-                                { 
-                                    title = option, 
-                                    type = key, 
-                                    settings = LayerSetting.RandomSettings(), 
-                                    inheritedSettings = [..blending.hereditarySettings.Select(s => s.Copy)]
-                                });
-                                StateHasChanged();
-                        })" />
-                </div>
-            </Footer>
         </SortableList>
     }
 </div>

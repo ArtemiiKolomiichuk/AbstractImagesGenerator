@@ -57,6 +57,7 @@ namespace AbstractImagesGenerator.Misc
         {
             get => new()
             {
+                Id = Guid.NewGuid().ToString(),
                 title = title,
                 type = type,
                 settings = [.. settings.Select(x => x.Copy)],
@@ -104,12 +105,12 @@ namespace AbstractImagesGenerator.Misc
         {
             Random random = new();
             List<LayerSetting> list = [];
-            for (int i = 0; i < random.Next() * 4; i++)
+            for (int i = 0; i < random.Next(4); i++)
             {
                 list.Add(new LayerSetting
                 {
                     title = random.Next().ToString(),
-                    type = (LayerSettingType)random.Next(4),
+                    type = (LayerSettingType)random.Next(6),
                 });
             }
             return list;
@@ -128,6 +129,7 @@ namespace AbstractImagesGenerator.Misc
         Scale = PositiveNumber,
         Angle = 3,
 
-        Color
+        Color,
+        Range
     }
 }
