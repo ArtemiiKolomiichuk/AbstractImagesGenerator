@@ -64,15 +64,15 @@
         </div>
     </div>
     <!-- -->
-    @if(Layer.settings.Count > 0 || Layer.inheritedSettings.Count > 0)
+    @if(Layer.Settings.Count > 0 || Layer.InheritedSettings.Count > 0)
     {
         <div class="@(IsFinalBlending ? "blend-settings" : "settings")">
-            @foreach(var setting in Layer.settings)
+            @foreach(var setting in Layer.Settings)
             {
                 var st = setting;
                 <SettingRow Setting="st" Update="StateHasChanged"/>
             }
-            @foreach (var setting in Layer.inheritedSettings)
+            @foreach (var setting in Layer.InheritedSettings)
             {
                 var st = setting;
                 <SettingRow Setting="st" Update="StateHasChanged" />
@@ -84,11 +84,11 @@
     {
         <SortableList Class="@(IsFinalBlending ? "inner-list first" : "inner-list")" 
             Id="@blending.Id" Group="Layers" 
-            Handle=".drag-handle" Items="blending.subLayers" 
+            Handle=".drag-handle" Items="blending.SubLayers" 
             OnUpdate="(x) => {SortList(x);StateHasChanged();}" 
             OnMove="x => {LayerListsController.Move(x); Update();}" Context="item">
             <SortableItemTemplate>
-                <LayerCard Layer="item" ParentList="blending.subLayers" Update="Update" />
+                <LayerCard Layer="item" ParentList="blending.SubLayers" Update="Update" />
             </SortableItemTemplate>
         </SortableList>
     }
@@ -109,14 +109,14 @@
 
     private ElementReference? editTitleInput;
 
-    private bool IsFinalBlending => ParentList == null && Layer is Blending blending && blending.inheritedSettings.Count == 0;
+    private bool IsFinalBlending => ParentList == null && Layer is Blending blending && blending.InheritedSettings.Count == 0;
 
     private void SortList((int oldIndex, int newIndex, string toId, string fromId) indices)
     {
         var (oldIndex, newIndex, _, _) = indices;
         var list = Layer switch
         {
-            Blending b => b.subLayers,
+            Blending b => b.SubLayers,
             _ => null
         };
 

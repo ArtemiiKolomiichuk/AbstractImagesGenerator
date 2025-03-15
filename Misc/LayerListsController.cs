@@ -15,17 +15,17 @@ namespace AbstractImagesGenerator.Misc
 
             if (from != null && to != null)
             {
-                var layer = from.subLayers[oldIndex];
-                from.subLayers.RemoveAt(oldIndex);
-                if (newIndex < to.subLayers.Count)
+                var layer = from.SubLayers[oldIndex];
+                from.SubLayers.RemoveAt(oldIndex);
+                if (newIndex < to.SubLayers.Count)
                 {
-                    to.subLayers.Insert(newIndex, layer);
+                    to.SubLayers.Insert(newIndex, layer);
                 }
                 else
                 {
-                    to.subLayers.Add(layer);
+                    to.SubLayers.Add(layer);
                 }
-                layer.UpdateInheritedSettings(to.hereditarySettings);
+                layer.UpdateInheritedSettings(to.HereditarySettings);
             }
         }
 
@@ -35,7 +35,7 @@ namespace AbstractImagesGenerator.Misc
             {
                 return blending;
             }
-            foreach (var layer in blending.subLayers)
+            foreach (var layer in blending.SubLayers)
             {
                 if (layer is Blending _blending)
                 {

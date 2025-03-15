@@ -1,17 +1,27 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AbstractImagesGenerator.Misc
 {
-    public class QueryObject(int width, int height, Blending blending)
+    public class QueryObject
     {
+        public QueryObject() { }
+
+        public QueryObject(int width, int height, Blending blending)
+        {
+            Width = width;
+            Height = height;
+            FinalBlending = new BlendingQuery(blending);
+        }
+
         [JsonProperty("width")]
-        public int Width { get; set; } = width;
+        public int Width { get; set; } 
 
         [JsonProperty("height")]
-        public int Height { get; set; } = height;
+        public int Height { get; set; } 
 
         [JsonProperty("layer_query")]
-        public BlendingQuery FinalBlending { get; set; } = new BlendingQuery(blending);
+        public BlendingQuery FinalBlending { get; set; } 
 
         public static async Task<(Blending, int, int)?> Deconstruct(string query)
         {
@@ -67,6 +77,7 @@ namespace AbstractImagesGenerator.Misc
         }
     }
 
+    [JsonConverter(typeof(LayerQueryConverter))]
     public abstract class LayerQuery
     {
         [JsonProperty("name")]
@@ -76,14 +87,15 @@ namespace AbstractImagesGenerator.Misc
         public string LayerType { get; set; }
 
         [JsonProperty("values")]
-        public Dictionary<string, object> Values { get; set; }
+        public Dictionary<string, object> Values { get; set; } = [];
 
         [JsonProperty("blending_values")]
-        public Dictionary<string, object> BlendingValues { get; set; }
+        public Dictionary<string, object> BlendingValues { get; set; } = [];
     }
 
     public class DrawingQuery : LayerQuery
     {
+        public DrawingQuery() { }
         public DrawingQuery(Drawing drawing)
         {
             Type = drawing.Type;
@@ -104,14 +116,16 @@ namespace AbstractImagesGenerator.Misc
     public class BlendingQuery : LayerQuery
     {
         [JsonProperty("layers")]
-        public List<LayerQuery> SubLayers { get; set; }
+        public List<LayerQuery> SubLayers { get; set; } = [];
+
+        public BlendingQuery() { }
 
         public BlendingQuery(Blending blending)
         {
             Type = blending.Type;
             LayerType = "blending";
             SubLayers = [];
-            foreach (var layer in blending.SubLayers)
+            foreach (var layer in blending.SubLayers ?? [])
             {
                 SubLayers.Add(layer switch
                 {
@@ -119,15 +133,63 @@ namespace AbstractImagesGenerator.Misc
                     Blending _blending => new BlendingQuery(_blending)
                 });
             }
-            foreach (var setting in blending.Settings)
+            foreach (var setting in blending.Settings ?? [])
             {
                 Values[setting.Type] = SettingValue.ToObject(setting.Value);
             }
             BlendingValues = [];
-            foreach (var setting in blending.InheritedSettings)
+            foreach (var setting in blending.InheritedSettings ?? [])
             {
                 BlendingValues[setting.Type] = SettingValue.ToObject(setting.Value);
             }
+        }
+    }
+
+
+    public class LayerQueryConverter : JsonConverter<LayerQuery>
+    {
+        public override LayerQuery? ReadJson(JsonReader reader, Type objectType, LayerQuery? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        {
+            var jObject = JObject.Load(reader);
+            var layerType = jObject["generator_type"].Value<string>();
+
+            LayerQuery layerQuery;
+            if (layerType == "algorithm")
+            {
+                layerQuery = new DrawingQuery();
+            }
+            else
+            {
+                layerQuery = new BlendingQuery();
+            }
+            layerQuery.Type = jObject["name"].Value<string>();
+            layerQuery.LayerType = layerType;
+            layerQuery.Values = jObject["values"]?.ToObject<Dictionary<string, object>>() ?? [];
+            layerQuery.BlendingValues = jObject["blending_values"]?.ToObject<Dictionary<string, object>>() ?? [];
+
+            if (layerQuery is BlendingQuery blendingQuery)
+            {
+                blendingQuery.SubLayers = jObject["layers"]?.ToObject<List<LayerQuery>>(serializer) ?? [];
+            }
+            return layerQuery;
+        }
+
+        public override void WriteJson(JsonWriter writer, LayerQuery? value, JsonSerializer serializer)
+        {
+            var jObject = new JObject
+            {
+                { "name", value.Type },
+                { "generator_type", value.LayerType },
+                { "values", JToken.FromObject(value.Values) },
+                { "blending_values", JToken.FromObject(value.BlendingValues) }
+            };
+
+            if (value is BlendingQuery blendingQuery)
+            {
+                jObject.Add("layers", JToken.FromObject(blendingQuery.SubLayers, serializer));
+            }
+
+            jObject.WriteTo(writer);
         }
     }
 }

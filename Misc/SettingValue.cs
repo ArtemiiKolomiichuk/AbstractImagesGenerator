@@ -24,8 +24,22 @@ namespace AbstractImagesGenerator.Misc
                 List<string> l => l,
                 int[] i => (i[0], i[1]),
                 double[] d => (d[0], d[1]),
+                JArray j => FromObject(FromJArray(j)),
                 _ => throw new ArgumentException("Unknown object type"),
             };
+        }
+
+        private static object FromJArray(JArray jArray)
+        {
+            if (jArray.Count == 2)
+            {
+                if (jArray[0].Type == JTokenType.Float || jArray[1].Type == JTokenType.Float)
+                    return new double[] { jArray[0].ToObject<double>(), jArray[1].ToObject<double>() };
+
+                if (jArray[0].Type == JTokenType.Integer && jArray[1].Type == JTokenType.Integer)
+                    return new int[] { jArray[0].ToObject<int>(), jArray[1].ToObject<int>() };
+            }
+            return new List<string>(jArray.ToObject<List<string>>());
         }
 
         public static object ToObject(SettingValue value)
