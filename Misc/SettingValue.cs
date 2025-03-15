@@ -12,6 +12,35 @@ namespace AbstractImagesGenerator.Misc
         public static implicit operator SettingValue(int value) => new IntRecord(value);
         public static implicit operator SettingValue(double value) => new FloatRecord(value);
         public static implicit operator SettingValue(bool value) => new BoolValue(value);
+
+        public static SettingValue FromObject(object o)
+        {
+            return o switch
+            {
+                int i => i,
+                double d => d,
+                bool b => b,
+                string s => new StringListValue([s]),
+                List<string> l => l,
+                int[] i => (i[0], i[1]),
+                double[] d => (d[0], d[1]),
+                _ => throw new ArgumentException("Unknown object type"),
+            };
+        }
+
+        public static object ToObject(SettingValue value)
+        {
+            return value switch
+            {
+                IntRecord i => i.Value,
+                FloatRecord f => f.Value,
+                BoolValue b => b.Value,
+                StringListValue s => s.Values,
+                IntTupleValue i => new int[] { i.Values.Item1, i.Values.Item2 },
+                FloatTupleValue f => new double[] { f.Values.Item1, f.Values.Item2 },
+                _ => throw new ArgumentException("Unknown SettingValue type"),
+            };
+        }
     }
 
     public record StringListValue(List<string> Values) : SettingValue

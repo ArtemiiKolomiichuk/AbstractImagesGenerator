@@ -42,6 +42,15 @@ namespace AbstractImagesGenerator.Misc
                 InheritedSettings = [.. InheritedSettings.Select(x => x.Copy)]
             };
         }
+
+        private static Drawing[] LayerOptions { get; set; }
+
+        public static async Task<Drawing[]> GetLayerOptions()
+        {
+            //TODO: async fetch
+            LayerOptions ??= [];
+            return [..LayerOptions.Select(x => x.Copy)];
+        }
     }
 
     public class Blending : Layer
@@ -63,6 +72,15 @@ namespace AbstractImagesGenerator.Misc
                 HereditarySettings = [.. HereditarySettings.Select(x => x.Copy)],
                 SubLayers = [.. SubLayers.Select(x => x.Copy)]
             };
+        }
+
+        private static Blending[] LayerOptions { get; set; }
+
+        public static async Task<Blending[]> GetLayerOptions()
+        {
+            //TODO: async fetch
+            LayerOptions ??= [];
+            return [.. LayerOptions.Select(x => x.Copy)];
         }
     }
 
