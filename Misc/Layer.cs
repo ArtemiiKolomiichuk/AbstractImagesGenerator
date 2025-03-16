@@ -43,12 +43,17 @@ namespace AbstractImagesGenerator.Misc
             };
         }
 
-        private static Drawing[] LayerOptions { get; set; }
+        internal static Drawing[] LayerOptions { get; set; }
 
         public static async Task<Drawing[]> GetLayerOptions()
         {
-            //TODO: async fetch
-            LayerOptions ??= [];
+            if (LayerOptions == null)
+            {
+                string json = await new HttpClient().GetStringAsync($"{Program.BaseApiUrl}/image-generator/model");
+                var layers = JsonConvert.DeserializeObject<LayersModel>(json);
+                LayerOptions = layers.Drawings;
+                Blending.LayerOptions = layers.Blendings;
+            }
             return [..LayerOptions.Select(x => x.Copy)];
         }
     }
@@ -74,13 +79,18 @@ namespace AbstractImagesGenerator.Misc
             };
         }
 
-        private static Blending[] LayerOptions { get; set; }
+        internal static Blending[] LayerOptions { get; set; }
 
         public static async Task<Blending[]> GetLayerOptions()
         {
-            //TODO: async fetch
-            LayerOptions ??= [];
-            return [.. LayerOptions.Select(x => x.Copy)];
+            if(LayerOptions == null)
+            {
+                string json = await new HttpClient().GetStringAsync($"{Program.BaseApiUrl}/image-generator/model");
+                var layers = JsonConvert.DeserializeObject<LayersModel>(json);
+                LayerOptions = layers.Blendings;
+                Drawing.LayerOptions = layers.Drawings;
+            }
+            return [..LayerOptions.Select(x => x.Copy)];
         }
     }
 
@@ -104,10 +114,6 @@ namespace AbstractImagesGenerator.Misc
         [JsonProperty("possible_values")]
         public List<object>? PossibleValues { get; set; }
         [JsonProperty("min_length")]
-        public int? MinLength { get; set; }
-        [JsonProperty("max_length")]
-        public int? MaxLength { get; set; }
-        [JsonProperty("min_count")]
         public int? MinCount { get; set; }
         [JsonProperty("max_count")]
         public int? MaxCount { get; set; }
@@ -136,8 +142,6 @@ namespace AbstractImagesGenerator.Misc
                     MinValue = MinValue,
                     MaxValue = MaxValue,
                     PossibleValues = PossibleValues,
-                    MinLength = MinLength,
-                    MaxLength = MaxLength,
                     MinCount = MinCount,
                     MaxCount = MaxCount
                 };
@@ -145,7 +149,7 @@ namespace AbstractImagesGenerator.Misc
             }
         }
 
-        public static bool operator ==(LayerSetting a, LayerSetting b) => a.Type == b.Type && a.DataType == b.DataType && a.VisibleType == b.VisibleType && a.MinValue == b.MinValue && a.MaxValue == b.MaxValue && a.PossibleValues == b.PossibleValues && a.MinLength == b.MinLength && a.MaxLength == b.MaxLength && a.MinCount == b.MinCount && a.MaxCount == b.MaxCount;
+        public static bool operator ==(LayerSetting a, LayerSetting b) => a.Type == b.Type && a.DataType == b.DataType && a.VisibleType == b.VisibleType && a.MinValue == b.MinValue && a.MaxValue == b.MaxValue && a.PossibleValues == b.PossibleValues && a.MinCount == b.MinCount && a.MaxCount == b.MaxCount;
         public static bool operator !=(LayerSetting a, LayerSetting b) => !(a == b);
     }
 
@@ -184,5 +188,13 @@ namespace AbstractImagesGenerator.Misc
         Colors,
         [EnumMember(Value = "selector")]
         Dropdown
+    }
+
+    internal class LayersModel
+    {
+        [JsonProperty("algorithms")]
+        public Drawing[] Drawings { get; set; }
+        [JsonProperty("blendings")]
+        public Blending[] Blendings { get; set; }
     }
 }

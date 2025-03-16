@@ -12,6 +12,7 @@ namespace AbstractImagesGenerator.Misc
         public static implicit operator SettingValue(int value) => new IntRecord(value);
         public static implicit operator SettingValue(double value) => new FloatRecord(value);
         public static implicit operator SettingValue(bool value) => new BoolValue(value);
+        public static implicit operator SettingValue(string value) => new StringValue(value);
 
         public static SettingValue FromObject(object o)
         {
@@ -20,7 +21,7 @@ namespace AbstractImagesGenerator.Misc
                 int i => i,
                 double d => d,
                 bool b => b,
-                string s => new StringListValue([s]),
+                string s => s,
                 List<string> l => l,
                 int[] i => (i[0], i[1]),
                 double[] d => (d[0], d[1]),
@@ -50,6 +51,7 @@ namespace AbstractImagesGenerator.Misc
                 FloatRecord f => f.Value,
                 BoolValue b => b.Value,
                 StringListValue s => s.Values,
+                StringValue s => s.Value,
                 IntTupleValue i => new int[] { i.Values.Item1, i.Values.Item2 },
                 FloatTupleValue f => new double[] { f.Values.Item1, f.Values.Item2 },
                 _ => throw new ArgumentException("Unknown SettingValue type"),
@@ -60,6 +62,11 @@ namespace AbstractImagesGenerator.Misc
     public record StringListValue(List<string> Values) : SettingValue
     {
         public static implicit operator List<string>(StringListValue value) => value.Values;
+    }
+
+    public record StringValue(string Value) : SettingValue
+    {
+        public static implicit operator string(StringValue value) => value.Value;
     }
 
     public record IntTupleValue((int, int) Values) : SettingValue

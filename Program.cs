@@ -5,6 +5,7 @@ namespace AbstractImagesGenerator
 {
     public class Program
     {
+        public const string BaseApiUrl = "http://localhost:8000/api";
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
