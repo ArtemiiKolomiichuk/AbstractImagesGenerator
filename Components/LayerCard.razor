@@ -35,11 +35,24 @@
             @if (IsFinalBlending && Layer is Blending _blending)
             {
                 <!--ADD LAYER-->
-                <span @onclick="() => { StateHasChanged();}" style="margin-right: 6px;">
+                <span @onclick="async () => {  
+                        var layer = await ModalController.ShowAsync(false);
+                        if(layer == null)
+                            return;
+                        layer.UpdateInheritedSettings(_blending.HereditarySettings);
+                        _blending.SubLayers.Add(layer);
+                        StateHasChanged();
+                    }" style="margin-right: 6px;">
                     <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
                 </span>
                 <!--CHANGE BLENDING TYPE-->
-                <span @onclick="() => { Update();}">
+                <span @onclick="async () => { 
+                        var blending = await ModalController.ShowAsync(true);
+                        if(blending == null || blending.Type == _blending.Type)
+                            return;
+                        //TODO: Implement blending type change
+                        Update();
+                    }">
                     <Ico Class="icon-button violet" Icon="@Icons.Customize" Size="2" Color="#7160e8" />
                 </span>
             }
@@ -48,7 +61,15 @@
                 @if (Layer is Blending __blending)
                 {
                     <!--ADD LAYER-->
-                    <span @onclick="() => { StateHasChanged();}" style="margin-right: 6px;">
+                    <span @onclick="async () => {  
+                            var layer = await ModalController.ShowAsync(false);
+                            if(layer == null)
+                                return;
+                            layer.UpdateInheritedSettings(__blending.HereditarySettings);
+                            __blending.SubLayers.Add(layer);
+                            StateHasChanged();
+                        }" 
+                        style="margin-right: 6px;">
                         <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
                     </span>
                 }

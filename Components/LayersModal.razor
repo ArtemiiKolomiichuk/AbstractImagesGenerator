@@ -1,0 +1,70 @@
+﻿@if (IsVisible)
+{
+    <div class="modal-overlay" @onclick="() => CloseModal(null)">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            @if(Drawings?.Count > 0)
+            {
+                <div style="display: flex; flex-direction: row;">
+                    <div style="display: flex;flex-direction: column; margin-right: 1.4rem;">
+                        <h3>Blendings</h3>
+                        @foreach (var layer in Blendings)
+                        {
+                            <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
+                        }
+                    </div>
+
+                    <div style="display: flex;flex-direction: column;">
+                        <h3>Drawings</h3>
+                        @foreach (var layer in Drawings)
+                        {
+                            <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <h3>Blendings</h3>
+                @foreach (var layer in Blendings)
+                {
+                    <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
+                }
+            }
+            <button class="modal-button" @onclick="() => CloseModal(null)">Close</button>
+        </div>
+    </div>
+}
+
+@code {
+    private bool IsVisible { get; set; } = false;
+
+    [Parameter]
+    public Action<Layer>? OnClose { get; set; }
+
+    private List<Blending> Blendings { get; set; } = new();
+
+    private List<Drawing> Drawings { get; set; } = new();
+
+    private TaskCompletionSource<Layer?>? _tcs;
+
+    public void SetLayers(Blending[] blendings, Drawing[] drawings)
+    {
+        Blendings = [..blendings];
+        Drawings = [..drawings];
+    }
+
+    public Task<Layer?> ShowAsync()
+    {
+        IsVisible = true;
+        _tcs = new();
+        StateHasChanged();
+        return _tcs.Task;
+    }
+
+    private void CloseModal(Layer? layer)
+    {
+        IsVisible = false;
+        _tcs?.SetResult(layer);
+        StateHasChanged();
+    }
+}
