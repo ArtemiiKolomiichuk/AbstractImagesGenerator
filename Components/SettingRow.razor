@@ -9,8 +9,11 @@
             {
                 <input type="range" min="@(Setting.MinValue ?? 0)" max="@(Setting.MaxValue ?? 0)" 
                 step="@(Setting.DataType == PropertyValueType.Float ? 0.01 : 1)" 
-                value="@(Setting.Value?.ToString() ?? string.Empty)"
-                @oninput="(e) => 
+                value="@(Setting.Value switch {
+                    FloatValue floatValue => floatValue.Value,
+                    IntValue intValue => intValue.Value
+                })"
+                @onchange ="(e) => 
                        { 
                             Setting.Value = Setting.DataType switch
                             {
@@ -18,6 +21,7 @@
                                 PropertyValueType.Int => int.Parse(e.Value.ToString()),
                                 _ => throw new NotImplementedException()
                             };
+                            StateHasChanged();
                             Update(); 
                        }"
                 style="margin: 0.4rem; width: 6rem;" />
@@ -27,7 +31,26 @@
             {
                 <RangeSlider Min="@(Convert.ToDouble(Setting.MinValue ?? 0))" Max="@(Convert.ToDouble(Setting.MaxValue ?? 0))" 
                 Step="@(Setting.DataType == PropertyValueType.FloatTuple ? 0.01 : 1)"
+                MaxValue="Setting.Value switch{
+                    FloatTupleValue floatTupleValue => floatTupleValue.Values.Item2,
+                    IntTupleValue intTupleValue => intTupleValue.Values.Item2
+                }"
+                MinValue="Setting.Value switch{
+                    FloatTupleValue floatTupleValue => floatTupleValue.Values.Item1,
+                    IntTupleValue intTupleValue => intTupleValue.Values.Item1
+                }"
                 OnChange="(r) => {
+                    (double, double) val = Setting.Value switch
+                    {
+                        FloatTupleValue floatTupleValue => (floatTupleValue.Values.Item1, floatTupleValue.Values.Item2),
+                        IntTupleValue intTupleValue => (intTupleValue.Values.Item1, intTupleValue.Values.Item2)
+                    };
+                    
+                    if(r.Item1 == val.Item1 && r.Item2 == val.Item2)
+                    {
+                        return;
+                    }
+
                     Setting.Value = Setting.DataType switch
                     {
                         PropertyValueType.FloatTuple => (r.Item1, r.Item2), 
@@ -70,8 +93,8 @@
                             {
                                 <!-- remove-->
                             }
-                            <input type="color" value="@(list.Values[i].ToString() ?? string.Empty)" class="color-input-row"
-                            @oninput="(e) => { list.Values[i] = e.Value.ToString(); Setting.Value = list; Update(); }"  />
+                            <input type="color" value="@(list.Values[i].ToString() ?? string.Empty)" class="color-input-block"
+                                   @oninput="(e) => { list.Values[i] = e.Value.ToString(); Setting.Value = list; Update(); }"  />
                         </div>
                     }
                     @if (expendable)
@@ -86,15 +109,6 @@
         break;
     }
 </div>
-<!--
-<div style="display: flex; align-items: center;">
-<input type="color" value="@(Setting.value?.ToString() ?? string.Empty)" @oninput="(e) => { Setting.value = e.Value.ToString(); Update(); }" class="color-input-row" />
-<span @onclick="() => Setting.value = RandomColor()" style="height: 2rem;-webkit-user-select: none;">
-<Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
-</span>
-</div>
-</div>-->
-
 
 @code {
     [Parameter]
@@ -156,12 +170,18 @@
         }
 
         var random = new Random();
+
+        double Random(double min, double max)
+        {
+            return random.NextDouble() * (max - min) + min;
+        }
+
         string[] colors = new string[amount];
         double baseHue = random.NextDouble() * 360;
         double step = 360.0 / amount;
 
-        double saturation = 0.7;
-        double lightness = 0.5;
+        double saturation = Random(0.6, 0.85);
+        double lightness = Random(0.35, 0.65);
 
         for (int i = 0; i < amount; i++)
         {

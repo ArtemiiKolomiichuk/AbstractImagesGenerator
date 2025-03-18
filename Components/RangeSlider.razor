@@ -31,6 +31,7 @@
     [Parameter]
     public T Min { get; set; }
 
+    [Parameter]
     public T MinValue
     {
         get;
@@ -39,13 +40,18 @@
             field = value;
             if(value.CompareTo(MaxValue) > 0)
             {
-                MaxValue = value;
+                if (!MaxValue.Equals(value))
+                {
+                    MaxValue = value;
+                    return;
+                }
             }
             StateHasChanged();
             OnChange?.Invoke((MinValue, MaxValue));
         }
     }
 
+    [Parameter]
     public T MaxValue
     {
         get;
@@ -54,7 +60,11 @@
             field = value;
             if(value.CompareTo(MinValue) < 0)
             {
-                MinValue = value;
+                if (!MinValue.Equals(value))
+                {
+                    MinValue = value;
+                    return;
+                }
             }
             StateHasChanged();
             OnChange?.Invoke((MinValue, MaxValue));

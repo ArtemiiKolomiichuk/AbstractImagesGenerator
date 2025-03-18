@@ -7,8 +7,8 @@ namespace AbstractImagesGenerator.Misc
     public abstract record SettingValue
     {
         public static implicit operator SettingValue(List<string> values) => new StringListValue(values);
-        public static implicit operator SettingValue((int, int) values) => new IntTupleValue(values);
-        public static implicit operator SettingValue((double, double) values) => new FloatTupleValue(values);
+        public static implicit operator SettingValue((int, int) values) => new IntTupleValue((values.Item1, values.Item2));
+        public static implicit operator SettingValue((double, double) values) => new FloatTupleValue((values.Item1, values.Item2));
         public static implicit operator SettingValue(int value) => new IntValue(value);
         public static implicit operator SettingValue(double value) => new FloatValue(value);
         public static implicit operator SettingValue(bool value) => new BoolValue(value);

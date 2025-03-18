@@ -134,9 +134,9 @@ namespace AbstractImagesGenerator.Misc
                         IntValue intRecord => new IntValue(intRecord.Value),
                         FloatValue floatRecord => new FloatValue(floatRecord.Value),
                         BoolValue boolValue => new BoolValue(boolValue.Value),
-                        IntTupleValue intTupleValue => new IntTupleValue(intTupleValue.Values),
-                        FloatTupleValue floatTupleValue => new FloatTupleValue(floatTupleValue.Values),
-                        StringListValue stringListValue => new StringListValue([..stringListValue.Values]),
+                        IntTupleValue intTupleValue => new IntTupleValue((intTupleValue.Values.Item1, intTupleValue.Values.Item2)),
+                        FloatTupleValue floatTupleValue => new FloatTupleValue((floatTupleValue.Values.Item1, floatTupleValue.Values.Item2)),
+                        StringListValue stringListValue => new StringListValue([.. stringListValue.Values]),
                         StringValue stringValue => new StringValue(stringValue.Value),
                         _ => throw new NotImplementedException()
                     },
