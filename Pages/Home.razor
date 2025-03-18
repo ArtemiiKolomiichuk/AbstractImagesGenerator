@@ -1,11 +1,15 @@
 ﻿@page "/"
+@using Newtonsoft.Json
+@using System.Text
+
+<LayersModal @ref="Modal" />
 
 <div>
     <div class="image-block" style="display: flex;
                                     justify-content: center;
                                     align-items: center;">
         <div style="display:flex; flex-direction: column;">
-            <img id="main-img" style="width:30vw; height: auto" src="R.jpg" />
+            <img id="main-img" style="width:30vw; height: auto" src="@imageSrc" />
         </div>
         <div style="width:2rem; height: 2rem"/>
         <div class="layers-list" style="display:flex; flex-direction: column;">
@@ -18,13 +22,32 @@
 </div>
 
 
+<button @onclick="GenerateInage">Generate Image</button>
+
+
 @code{
+    private string imageSrc = "R.jpg";
     public static Blending blending;
+    public static LayersModal Modal;
 
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
         blending = (await Blending.GetLayerOptions()).First();
-        blending.SubLayers = [(await Drawing.GetLayerOptions()).First()];
+    }
+
+    private async void GenerateInage()
+    {
+        var httpClient = new HttpClient();
+        var query = new QueryObject(1028, 1028, blending);
+        var str = JsonConvert.SerializeObject(query);
+        var content = new StringContent(str, Encoding.UTF8, "application/json");
+        var response = await httpClient.PostAsync(Program.BaseApiUrl + "/image-generator/query/full?include_metadata=false", content);
+        if (response.IsSuccessStatusCode)
+        {
+            var imageBytes = await response.Content.ReadAsByteArrayAsync();
+            imageSrc = $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
+            StateHasChanged();
+        }
     }
 }

@@ -180,9 +180,17 @@ namespace AbstractImagesGenerator.Misc
             {
                 { "name", value.Type },
                 { "generator_type", value.LayerType },
-                { "values", JToken.FromObject(value.Values) },
-                { "blending_values", JToken.FromObject(value.BlendingValues) }
             };
+
+            if(value.Values.Count != 0)
+            {
+                jObject.Add("values", JToken.FromObject(value.Values, serializer));
+            }
+            if(value.BlendingValues.Count != 0)
+            {
+                jObject.Add("blending_values", JToken.FromObject(value.BlendingValues, serializer));
+            }
+
 
             if (value is BlendingQuery blendingQuery)
             {
