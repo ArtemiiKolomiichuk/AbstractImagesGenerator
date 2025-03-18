@@ -1,47 +1,174 @@
-﻿@switch (Setting.type)
-{
-    case LayerSettingType.Color:
-        <div style="display: flex; align-items:center">
-            <div style="padding-right:1em">
-                @Setting.title
-            </div>
-            <div style="display: flex; align-items: center;">
-                <input type="color" value="@(Setting.value?.ToString() ?? string.Empty)" @oninput="(e) => { Setting.value = e.Value.ToString(); Update(); }" class="color-input-row" />
-                <span @onclick="() => Setting.value = RandomColor()" style="height: 2rem;-webkit-user-select: none;">
-                    <Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
-                </span>
-            </div>
-        </div>
+﻿
+<div style="display: flex; align-items:center">
+    <div class="@(Inherited ? "setting-row inherited" : "setting-row")" style="padding-right:1em">
+        @Setting.Title
+    </div>
+    @switch (Setting.VisibleType)
+    {
+        case PropertyDisplayType.Slider:
+            {
+                <input type="range" min="@(Setting.MinValue ?? 0)" max="@(Setting.MaxValue ?? 0)" 
+                step="@(Setting.DataType == PropertyValueType.Float ? 0.01 : 1)" 
+                value="@(Setting.Value?.ToString() ?? string.Empty)"
+                @oninput="(e) => 
+                       { 
+                            Setting.Value = Setting.DataType switch
+                            {
+                                PropertyValueType.Float => double.Parse(e.Value.ToString()),
+                                PropertyValueType.Int => int.Parse(e.Value.ToString()),
+                                _ => throw new NotImplementedException()
+                            };
+                            Update(); 
+                       }"
+                style="margin: 0.4rem; width: 6rem;" />
+            }
+            break;
+        case PropertyDisplayType.RangeSlider:
+            {
+                <RangeSlider Min="@(Convert.ToDouble(Setting.MinValue ?? 0))" Max="@(Convert.ToDouble(Setting.MaxValue ?? 0))" 
+                Step="@(Setting.DataType == PropertyValueType.FloatTuple ? 0.01 : 1)"
+                OnChange="(r) => {
+                    Setting.Value = Setting.DataType switch
+                    {
+                        PropertyValueType.FloatTuple => (r.Item1, r.Item2), 
+                        PropertyValueType.IntTuple => ((int)r.Item1, (int)r.Item2),
+                        _ => throw new NotImplementedException()
+                    };
+                    Update(); 
+                }
+                "/>
+            }
+            break;
+        case PropertyDisplayType.Checkbox:
+            {
+                <input type="checkbox" checked="@(Setting.Value is BoolValue boolValue && boolValue.Value)" 
+                @onchange="(e) => { Setting.Value = bool.Parse(e.Value?.ToString() ?? false.ToString()); Update(); }" />
+            }
+            break;
+        case PropertyDisplayType.Dropdown:
+            {
+                <Selector Options="@([..Setting.PossibleValues!.Keys])" OnSelect="(s) => Setting.Value = Setting.PossibleValues[s]" />
+            }
+            break;
+        case PropertyDisplayType.Colors:
+            {
+                var list = Setting.Value as StringListValue;
+                if(list == null)
+                {
+                    throw new InvalidOperationException("Setting value is not a StringListValue");
+                }
+                bool shrinkable = list.Values.Count > Setting.MinCount;
+                bool expendable = list.Values.Count < Setting.MaxCount;
+                <div style="display: flex;
+                            align-items: center;
+                            flex-wrap: wrap;">
+                    @for(int l = 0; l < list.Values.Count; l++)
+                    {
+                        int i = l;
+                        <div>
+                            @if (shrinkable)
+                            {
+                                <!-- remove-->
+                            }
+                            <input type="color" value="@(list.Values[i].ToString() ?? string.Empty)" class="color-input-row"
+                            @oninput="(e) => { list.Values[i] = e.Value.ToString(); Setting.Value = list; Update(); }"  />
+                        </div>
+                    }
+                    @if (expendable)
+                    {
+                        <!-- plus one-->
+                    }
+                    <span @onclick="() => Setting.Value = RandomPalette(list.Values.Count).ToList()" style="height: 2rem;-webkit-user-select: none;">
+                        <Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
+                    </span>
+                </div>
+            }
         break;
-    case LayerSettingType.Angle:
-        <div style="display: flex; align-items:center">
-            <div style="padding-right:1em">
-                @Setting.title
-            </div>
-            <div style="padding-right:0.4em; width: 1.5rem">
-                @(Setting.value?.ToString() ?? "0")
-            </div>
-            <div>
-                <input type="range" min="-180" max="180" step="1" value="@(Setting.value?.ToString() ?? string.Empty)" 
-                    @oninput="(e) => { Setting.value = e.Value.ToString(); Update(); }" 
-                    style="margin: 0.4rem;width: 6rem;" />
-            </div>
-        </div>
-        break;
-    case LayerSettingType.Range:
-        <RangeSlider Min="5" Max="100" Step="0.2"/>
-        break;
-}
+    }
+</div>
+<!--
+<div style="display: flex; align-items: center;">
+<input type="color" value="@(Setting.value?.ToString() ?? string.Empty)" @oninput="(e) => { Setting.value = e.Value.ToString(); Update(); }" class="color-input-row" />
+<span @onclick="() => Setting.value = RandomColor()" style="height: 2rem;-webkit-user-select: none;">
+<Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
+</span>
+</div>
+</div>-->
+
+
 @code {
     [Parameter]
     public LayerSetting Setting { get; set; }
 
     [Parameter]
+    public bool Inherited { get; set; }
+
+    [Parameter]
     public Action Update { get; set; }
+
 
     private static string RandomColor()
     {
         var random = new Random();
         return $"#{random.Next(0x1000000):X6}";
+    }
+
+    private static string[] RandomPalette(int amount)
+    {
+        double HueToRGB(double p, double q, double t)
+        {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1.0 / 6.0)
+                return p + (q - p) * 6 * t;
+            if (t < 1.0 / 2.0)
+                return q;
+            if (t < 2.0 / 3.0)
+                return p + (q - p) * (2.0 / 3.0 - t) * 6;
+            return p;
+        }
+
+        string HSLToHex(double h, double s, double l)
+        {
+            double r, g, b;
+            if (s == 0)
+            {
+                r = g = b = l;
+            }
+            else
+            {
+                double q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                double p = 2 * l - q;
+                double hk = h / 360.0;
+                double tR = hk + 1.0 / 3.0;
+                double tG = hk;
+                double tB = hk - 1.0 / 3.0;
+
+                r = HueToRGB(p, q, tR);
+                g = HueToRGB(p, q, tG);
+                b = HueToRGB(p, q, tB);
+            }
+
+            int R = (int)Math.Round(r * 255);
+            int G = (int)Math.Round(g * 255);
+            int B = (int)Math.Round(b * 255);
+            return $"#{R:X2}{G:X2}{B:X2}";
+        }
+
+        var random = new Random();
+        string[] colors = new string[amount];
+        double baseHue = random.NextDouble() * 360;
+        double step = 360.0 / amount;
+
+        double saturation = 0.7;
+        double lightness = 0.5;
+
+        for (int i = 0; i < amount; i++)
+        {
+            double hue = (baseHue + i * step) % 360;
+            colors[i] = HSLToHex(hue, saturation, lightness);
+        }
+
+        return colors;
     }
 }

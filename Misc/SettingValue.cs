@@ -9,8 +9,8 @@ namespace AbstractImagesGenerator.Misc
         public static implicit operator SettingValue(List<string> values) => new StringListValue(values);
         public static implicit operator SettingValue((int, int) values) => new IntTupleValue(values);
         public static implicit operator SettingValue((double, double) values) => new FloatTupleValue(values);
-        public static implicit operator SettingValue(int value) => new IntRecord(value);
-        public static implicit operator SettingValue(double value) => new FloatRecord(value);
+        public static implicit operator SettingValue(int value) => new IntValue(value);
+        public static implicit operator SettingValue(double value) => new FloatValue(value);
         public static implicit operator SettingValue(bool value) => new BoolValue(value);
         public static implicit operator SettingValue(string value) => new StringValue(value);
 
@@ -47,8 +47,8 @@ namespace AbstractImagesGenerator.Misc
         {
             return value switch
             {
-                IntRecord i => i.Value,
-                FloatRecord f => f.Value,
+                IntValue i => i.Value,
+                FloatValue f => f.Value,
                 BoolValue b => b.Value,
                 StringListValue s => s.Values,
                 StringValue s => s.Value,
@@ -79,14 +79,14 @@ namespace AbstractImagesGenerator.Misc
         public static implicit operator (double, double)(FloatTupleValue value) => value.Values;
     }
 
-    public record IntRecord(int Value) : SettingValue
+    public record IntValue(int Value) : SettingValue
     {
-        public static implicit operator int(IntRecord value) => value.Value;
+        public static implicit operator int(IntValue value) => value.Value;
     }
 
-    public record FloatRecord(double Value) : SettingValue
+    public record FloatValue(double Value) : SettingValue
     {
-        public static implicit operator double(FloatRecord value) => value.Value;
+        public static implicit operator double(FloatValue value) => value.Value;
     }
 
     public record BoolValue(bool Value) : SettingValue
@@ -104,10 +104,10 @@ namespace AbstractImagesGenerator.Misc
                 return new BoolValue(jToken.ToObject<bool>());
 
             if(jToken.Type == JTokenType.Integer)
-                return new IntRecord(jToken.ToObject<int>());
+                return new IntValue(jToken.ToObject<int>());
 
             if (jToken.Type == JTokenType.Float)
-                return new FloatRecord(jToken.ToObject<double>());
+                return new FloatValue(jToken.ToObject<double>());
 
             if (jToken.Type == JTokenType.Array)
             {
@@ -122,7 +122,7 @@ namespace AbstractImagesGenerator.Misc
                 return new StringListValue(array.ToObject<List<string>>());
             }
 
-            throw new JsonSerializationException("Unknown ValueRecord format");
+            throw new NotImplementedException();
         }
 
         public override void WriteJson(JsonWriter writer, SettingValue value, JsonSerializer serializer)
@@ -141,14 +141,14 @@ namespace AbstractImagesGenerator.Misc
                 case StringListValue stringListValue:
                     serializer.Serialize(writer, stringListValue.Values);
                     break;
-                case IntRecord intRecord:
+                case IntValue intRecord:
                     serializer.Serialize(writer, intRecord.Value);
                     break;
-                case FloatRecord floatRecord:
+                case FloatValue floatRecord:
                     serializer.Serialize(writer, floatRecord.Value);
                     break;
                 default:
-                    throw new JsonSerializationException("Unknown ValueRecord type");
+                    throw new NotImplementedException();
             }
         }
     }

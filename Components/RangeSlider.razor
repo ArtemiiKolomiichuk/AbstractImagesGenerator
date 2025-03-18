@@ -1,87 +1,8 @@
-﻿<style>
-    .range-slider {
-    position: relative;
-    width: 220px;
-    height: 60px; 
-    }
-
-    .slider-track {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: #ccc;
-    transform: translateY(-50%);
-    z-index: 1;
-    width: 95%;
-    margin-left: 2.5%;
-    }
-
-    .slider {
-    position: absolute;
-    width: 100%;
-    background: transparent;
-    -webkit-appearance: none;
-    appearance: none;
-    z-index: 2;
-    outline: none;
-    }
-
-    .slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 20px;
-    width: 20px;
-    border-radius: 50%;
-    background: #007bff;
-    border: 2px solid #fff;
-    cursor: pointer;
-    position: relative;
-    z-index: 3;
-    }
-
-    .slider::-moz-range-thumb {
-    height: 20px;
-    width: 20px;
-    border-radius: 50%;
-    background: #007bff;
-    border: 2px solid #fff;
-    cursor: pointer;
-    position: relative;
-    z-index: 3;
-    }
-
-    .min-slider {
-    top: 25px;
-
-    }
-
-    .max-slider {
-    top: 10px;
-    }
-
-    .value-label {
-    position: absolute;
-    font-size: 14px;
-    color: #333;
-    }
-
-    .min-label {
-    top: 45px;
-    }
-
-    .max-label {
-    top: -4px;
-    }
-
-</style>
-
-@typeparam T where T : IComparable
+﻿@typeparam T where T : IComparable
 
 <div class="range-slider">
-    <span class="value-label min-label" style="@($"left: calc({(MinValuePercentage)}% + {(MinValuePercentage/100 * -34 + 6)}px)")">@MinValue</span>
-    <span class="value-label max-label" style="@($"left: calc(  {MaxValuePercentage}% + {(MaxValuePercentage/100 * -34 + 6)}px)")">@MaxValue</span>
+    <span class="value-label min-label" style="@($"left: calc({MinValuePercentage}% + {(MinValuePercentage/100 * -34 + 6)}px)")">@MinValue</span>
+    <span class="value-label max-label" style="@($"left: calc({MaxValuePercentage}% + {(MaxValuePercentage/100 * -34 + 6)}px)")">@MaxValue</span>
 
     <input type="range"
         min="@Min"
@@ -121,6 +42,7 @@
                 MaxValue = value;
             }
             StateHasChanged();
+            OnChange?.Invoke((MinValue, MaxValue));
         }
     }
 
@@ -135,8 +57,12 @@
                 MinValue = value;
             }
             StateHasChanged();
+            OnChange?.Invoke((MinValue, MaxValue));
         }
     }
+
+    [Parameter]
+    public Action<(T, T)>? OnChange { get; set; }
 
     public double MinValuePercentage => (Convert.ToDouble(MinValue) - Convert.ToDouble(Min)) / (Convert.ToDouble(Max) - Convert.ToDouble(Min)) * 100;
 

@@ -112,7 +112,7 @@ namespace AbstractImagesGenerator.Misc
         [JsonProperty("max_value")]
         public object? MaxValue { get; set; }
         [JsonProperty("possible_values")]
-        public List<object>? PossibleValues { get; set; }
+        public Dictionary<string, SettingValue>? PossibleValues { get; set; }
         [JsonProperty("min_length")]
         public int? MinCount { get; set; }
         [JsonProperty("max_count")]
@@ -131,13 +131,14 @@ namespace AbstractImagesGenerator.Misc
                     VisibleType = VisibleType,
                     Value = Value switch
                     {
-                        IntRecord intRecord => new IntRecord(intRecord.Value),
-                        FloatRecord floatRecord => new FloatRecord(floatRecord.Value),
+                        IntValue intRecord => new IntValue(intRecord.Value),
+                        FloatValue floatRecord => new FloatValue(floatRecord.Value),
                         BoolValue boolValue => new BoolValue(boolValue.Value),
                         IntTupleValue intTupleValue => new IntTupleValue(intTupleValue.Values),
                         FloatTupleValue floatTupleValue => new FloatTupleValue(floatTupleValue.Values),
                         StringListValue stringListValue => new StringListValue([..stringListValue.Values]),
-                        _ => null
+                        StringValue stringValue => new StringValue(stringValue.Value),
+                        _ => throw new NotImplementedException()
                     },
                     MinValue = MinValue,
                     MaxValue = MaxValue,
@@ -149,7 +150,7 @@ namespace AbstractImagesGenerator.Misc
             }
         }
 
-        public static bool operator ==(LayerSetting a, LayerSetting b) => a.Type == b.Type && a.DataType == b.DataType && a.VisibleType == b.VisibleType && a.MinValue == b.MinValue && a.MaxValue == b.MaxValue && a.PossibleValues == b.PossibleValues && a.MinCount == b.MinCount && a.MaxCount == b.MaxCount;
+        public static bool operator ==(LayerSetting a, LayerSetting b) => a.Type == b.Type && a.DataType == b.DataType && a.VisibleType == b.VisibleType && a.MinValue == b.MinValue && a.MaxValue == b.MaxValue && a.MinCount == b.MinCount && a.MaxCount == b.MaxCount;
         public static bool operator !=(LayerSetting a, LayerSetting b) => !(a == b);
     }
 

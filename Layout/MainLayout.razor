@@ -263,5 +263,81 @@
     .l-1 {
         margin-left: 3px;
     }
+
+
+    .range-slider {
+        position: relative;
+        width: 220px;
+        height: 70px;
+    }
+
+    .slider-track {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #ccc;
+        transform: translateY(-50%);
+        z-index: 1;
+        width: 95%;
+        margin-left: 2.5%;
+    }
+
+    .slider {
+        position: absolute;
+        width: 100%;
+        background: transparent;
+        -webkit-appearance: none;
+        appearance: none;
+        z-index: 2;
+        outline: none;
+    }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            border: 2px solid #fff;
+            cursor: pointer;
+            position: relative;
+            z-index: 3;
+        }
+
+        .slider::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            border: 2px solid #fff;
+            cursor: pointer;
+            position: relative;
+            z-index: 3;
+        }
+
+    .min-slider {
+        top: 32px;
+    }
+
+    .max-slider {
+        top: 13px;
+    }
+
+    .value-label {
+        position: absolute;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .min-label {
+        top: 51px;
+    }
+
+    .max-label {
+        top: -0px;
+    }
 </style>
 @Body

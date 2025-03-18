@@ -75,7 +75,7 @@
             @foreach (var setting in Layer.InheritedSettings)
             {
                 var st = setting;
-                <SettingRow Setting="st" Update="StateHasChanged" />
+                <SettingRow Setting="st" Update="StateHasChanged" Inherited/>
             }
         </div>
     }

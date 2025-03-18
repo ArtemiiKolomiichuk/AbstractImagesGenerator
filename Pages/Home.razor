@@ -6,36 +6,25 @@
                                     align-items: center;">
         <div style="display:flex; flex-direction: column;">
             <img id="main-img" style="width:30vw; height: auto" src="R.jpg" />
-
         </div>
         <div style="width:2rem; height: 2rem"/>
         <div class="layers-list" style="display:flex; flex-direction: column;">
-            <LayerCard Layer="blending" Update="StateHasChanged" ParentList="null"/>
+            @if (blending != null)
+            {
+                <LayerCard Layer="blending" Update="StateHasChanged" ParentList="null" />
+            }
         </div>
     </div>
 </div>
 
 
 @code{
-    public static readonly Blending blending = new()
+    public static Blending blending;
+
+    protected override async Task OnInitializedAsync()
     {
-        title = "Final Blending",
-        type = "Opacity Layering",
-        settings = [
-            new(){
-                title = "Rotation Transfrom",
-                type = LayerSettingType.Angle,
-                value = 35
-            }
-        ],
-        inheritedSettings = [],
-        hereditarySettings = [
-            new(){
-                title = "Opacity (inh)",
-                type = LayerSettingType.Angle,
-                value = 100
-            }
-        ],
-        subLayers = []
-    };
+        base.OnInitialized();
+        blending = (await Blending.GetLayerOptions()).First();
+        blending.SubLayers = [(await Drawing.GetLayerOptions()).First()];
+    }
 }

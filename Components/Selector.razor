@@ -1,0 +1,21 @@
+﻿<select class="@Class" @onchange="(x) => OnSelect?.Invoke(x.Value?.ToString())">
+    <option value="">@Title</option>
+    @foreach (var option in Options)
+    {
+        <option value="@option">@option</option>
+    }
+</select>
+
+@code {
+    [Parameter]
+    public List<string> Options { get; set; } = [];
+
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    [Parameter]
+    public Action<string?>? OnSelect { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "Please select an option";
+}
