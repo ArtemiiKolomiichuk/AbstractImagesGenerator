@@ -32,12 +32,36 @@
             </div>
         </div>
         <div style="display:flex">
+            <!--CONTENT VISIBILITY-->
+            @if (!IsFinalBlending)
+            {
+                if(Layer.HideContent)
+                {
+                    <div title="Details Hidden" style="cursor:pointer; margin-right: 2px; display:flex;" 
+                        @onclick="() => {
+                            Layer.HideContent = false;
+                            StateHasChanged();
+                        }">
+                        <Ico Class="icon-button grey" Icon="@Icons.DetailsHidden" Size="2" Color="#414141" />
+                    </div>
+                }
+                else
+                {
+                <div title="Details Shown" style="cursor:pointer; margin-right: 2px; display:flex;"
+                        @onclick="() => {
+                            Layer.HideContent = true;
+                            StateHasChanged();
+                        }">
+                        <Ico Class="icon-button grey" Icon="@Icons.DetailsVisible" Size="2" Color="#414141" />
+                    </div>
+                }
+            }
             <!--LOCK-->
             @if (Layer.Seed != null)
             {
                 if (ParentLocked)
                 {
-                    <div title="Inherited Lock" style="cursor:help; margin-right: 2px; display:flex;">
+                    <div title="Inherited Lock" style="cursor:help; margin-right: 2px; margin-left: -9px; display:flex;">
                         <div style="margin-top: -6px; margin-right:-10px;">
                             <Ico Class="icon-button" Icon="@Icons.ArrowDownRight" Size="2" Color="#41414180" />
                         </div>
@@ -117,7 +141,7 @@
         </div>
     </div>
     <!-- -->
-    @if(Layer.Settings.Count > 0 || Layer.InheritedSettings.Count > 0)
+    @if(!Layer.HideContent && (Layer.Settings.Count > 0 || Layer.InheritedSettings.Count > 0))
     {
         <div class="@(IsFinalBlending ? "blend-settings" : "settings")">
             @foreach(var setting in Layer.Settings)
@@ -133,7 +157,7 @@
         </div>
     }
     <!-- -->
-    @if (Layer is Blending blending)
+    @if (!Layer.HideContent && Layer is Blending blending)
     {
         <SortableList Class="@(IsFinalBlending ? "inner-list first" : "inner-list")" 
         Id="@blending.Id" Group="Layers" 

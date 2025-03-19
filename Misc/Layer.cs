@@ -22,6 +22,9 @@ namespace AbstractImagesGenerator.Misc
         public long? Seed { get; set; } = null;
 
         [JsonIgnore]
+        public bool HideContent { get; set; } = false;
+
+        [JsonIgnore]
         public bool Locked { get; set; } = false;
 
         [JsonIgnore]
@@ -44,6 +47,8 @@ namespace AbstractImagesGenerator.Misc
             {
                 Title = Title,
                 Type = Type,
+                Seed = Seed,
+                HideContent = HideContent,
                 Settings = [.. Settings.Select(x => x.Copy)],
                 InheritedSettings = [.. InheritedSettings.Select(x => x.Copy)]
             };
@@ -78,6 +83,8 @@ namespace AbstractImagesGenerator.Misc
                 Id = Guid.NewGuid().ToString(),
                 Title = Title,
                 Type = Type,
+                Seed = Seed,
+                HideContent = HideContent,
                 Settings = [.. Settings.Select(x => x.Copy)],
                 InheritedSettings = [.. InheritedSettings.Select(x => x.Copy)],
                 HereditarySettings = [.. HereditarySettings.Select(x => x.Copy)],
