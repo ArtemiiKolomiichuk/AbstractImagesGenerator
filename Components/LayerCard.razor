@@ -32,6 +32,37 @@
             </div>
         </div>
         <div style="display:flex">
+            <!--LOCK-->
+            @if (Layer.Seed != null)
+            {
+                if (ParentLocked)
+                {
+                    <div title="Inherited Lock" style="cursor:help; margin-right: 2px; display:flex;">
+                        <div style="margin-top: -6px; margin-right:-10px;">
+                            <Ico Class="icon-button" Icon="@Icons.ArrowDownRight" Size="2" Color="#41414180" />
+                        </div>
+                        <Ico Class="icon-button" Icon="@Icons.Lock" Size="2" Color="#41414165" />
+                    </div>
+                }
+                else if (Layer.Locked)
+                {
+                    <span @onclick="() => { 
+                            Layer.Locked = false;
+                            Update();
+                        }" title="Locked" style="margin-right: 6px;">
+                        <Ico Class="icon-button grey" Icon="@Icons.Lock" Size="2" Color="#414141" />
+                    </span>
+                }
+                else
+                {
+                    <span @onclick="() => { 
+                            Layer.Locked = true;
+                            Update();
+                        }" title="Unlocked" style="margin-right: 6px;">
+                        <Ico Class="icon-button grey" Icon="@Icons.LockOpen" Size="2" Color="#414141" />
+                    </span>
+                }
+            } 
             @if (IsFinalBlending && Layer is Blending _blending)
             {
                 <!--ADD LAYER-->
@@ -43,7 +74,7 @@
                         _blending.SubLayers.Add(layer);
                         StateHasChanged();
                     }" style="margin-right: 6px;"
-                    title="Add SubLayer">
+                title="Add SubLayer">
                     <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
                 </span>
                 <!--CHANGE BLENDING TYPE-->
@@ -70,7 +101,7 @@
                             __blending.SubLayers.Add(layer);
                             StateHasChanged();
                         }" 
-                        style="margin-right: 6px;" title="Add SubLayer">
+                    style="margin-right: 6px;" title="Add SubLayer">
                         <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
                     </span>
                 }
@@ -79,7 +110,7 @@
                     <Ico Class="icon-button violet" Icon="@Icons.DuplicateLayer" Size="2" Color="#7160e8" />
                 </span>
                 <!--DELETE-->
-            <span @onclick="() => {ParentList!.Remove(Layer); Update();}" title="Delete">
+                <span @onclick="() => {ParentList!.Remove(Layer); Update();}" title="Delete">
                     <Ico Class="icon-button red" Icon="@Icons.Delete" Size="2" Color="#f06270" />
                 </span>
             }
@@ -105,12 +136,12 @@
     @if (Layer is Blending blending)
     {
         <SortableList Class="@(IsFinalBlending ? "inner-list first" : "inner-list")" 
-            Id="@blending.Id" Group="Layers" 
-            Handle=".drag-handle" Items="blending.SubLayers" 
-            OnUpdate="(x) => {SortList(x);StateHasChanged();}" 
-            OnMove="x => {LayerListsController.Move(x); Update();}" Context="item">
+        Id="@blending.Id" Group="Layers" 
+        Handle=".drag-handle" Items="blending.SubLayers" 
+        OnUpdate="(x) => {SortList(x);StateHasChanged();}" 
+        OnMove="x => {LayerListsController.Move(x); Update();}" Context="item">
             <SortableItemTemplate>
-                <LayerCard Layer="item" ParentList="blending.SubLayers" Update="Update" />
+                <LayerCard Layer="item" ParentList="blending.SubLayers" Update="Update" ParentLocked="blending.Locked || ParentLocked"/>
             </SortableItemTemplate>
         </SortableList>
     }
@@ -126,6 +157,10 @@
 
     [Parameter]
     public Action Update { get; set; }
+
+    [Parameter]
+    public bool ParentLocked { get; set; } = false;
+
 
     private bool editingTitle = false;
 

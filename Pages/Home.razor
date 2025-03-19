@@ -52,6 +52,11 @@
             using (StreamReader reader = new StreamReader(jsonStream))
             {
                 var json = reader.ReadToEnd();
+                var blending = (await QueryObject.Deconstruct(json)).Value.Item1;
+                Console.WriteLine(blending.Seed);
+                Home.blending.Seed = blending.Seed;
+                SetSeeds(Home.blending.SubLayers, blending.SubLayers);
+                StateHasChanged();
             }
             
             imageSrc = $"data:image/png;base64,{Convert.ToBase64String(ReadFully(imageStream))}";
@@ -65,6 +70,18 @@
         {
             input.CopyTo(ms);
             return ms.ToArray();
+        }
+    }
+
+    private void SetSeeds(List<Layer> layers, List<Layer> newLayers)
+    {
+        for (int i = 0; i < layers.Count; i++)
+        {
+            layers[i].Seed = newLayers[i].Seed;
+            if(layers[i] is Blending blendingTo && blendingTo.SubLayers != null && newLayers[i] is Blending blendingFrom)
+            {
+                SetSeeds(blendingTo.SubLayers, blendingFrom.SubLayers);
+            }
         }
     }
 }

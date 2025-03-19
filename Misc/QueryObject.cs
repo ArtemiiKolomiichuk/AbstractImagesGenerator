@@ -18,7 +18,10 @@ namespace AbstractImagesGenerator.Misc
         public int Width { get; set; } 
 
         [JsonProperty("height")]
-        public int Height { get; set; } 
+        public int Height { get; set; }
+
+        [JsonProperty("seed")]
+        public long? Seed { get; set; } = null;
 
         [JsonProperty("layer_query")]
         public BlendingQuery FinalBlending { get; set; } 
@@ -42,10 +45,11 @@ namespace AbstractImagesGenerator.Misc
                 {
                     drawing.InheritedSettings.First(x => x.Type == setting.Key).Value = SettingValue.FromObject(setting.Value);
                 }
+                drawing.Seed = drawingQuery.Seed;
                 return drawing;
             }
 
-            Blending DeconstructBlending(Blending[] defaultBlendings, Drawing[] defaultDrawings, Blending? parentBlending, BlendingQuery blendingQuery)
+            Blending DeconstructBlending(Blending[] defaultBlendings, Drawing[] defaultDrawings, Blending? parentBlending, long Seed, BlendingQuery blendingQuery)
             {
                 var blending = defaultBlendings.First(x => x.Type == blendingQuery.Type).Copy;
                 foreach (var setting in blendingQuery.Values)
@@ -59,13 +63,18 @@ namespace AbstractImagesGenerator.Misc
                     {
                         blending.InheritedSettings.First(x => x.Type == setting.Key).Value = SettingValue.FromObject(setting.Value);
                     }
+                    blending.Seed = blendingQuery.Seed;
+                }
+                else if (Seed > 0)
+                {
+                    blending.Seed = Seed;
                 }
                 blending.SubLayers = [];
                 foreach (var layer in blendingQuery.SubLayers)
                 {
                     blending.SubLayers.Add(layer switch
                     {
-                        BlendingQuery _blendingQuery => DeconstructBlending(defaultBlendings, defaultDrawings, blending, _blendingQuery),
+                        BlendingQuery _blendingQuery => DeconstructBlending(defaultBlendings, defaultDrawings, blending, 0, _blendingQuery),
                         DrawingQuery drawingQuery => DeconstructDrawing(defaultDrawings, blending, drawingQuery),
                         _ => throw new NotImplementedException()
                     });
@@ -73,7 +82,7 @@ namespace AbstractImagesGenerator.Misc
                 return blending;
             }
 
-            return (DeconstructBlending(defaultBlendings, defaulltDrawings, null, queryObject.FinalBlending), queryObject.Width, queryObject.Height);
+            return (DeconstructBlending(defaultBlendings, defaulltDrawings, null, queryObject.Seed ?? -1, queryObject.FinalBlending), queryObject.Width, queryObject.Height);
         }
     }
 
@@ -85,6 +94,8 @@ namespace AbstractImagesGenerator.Misc
 
         [JsonProperty("generator_type")]
         public string LayerType { get; set; }
+
+        public long? Seed { get; set; } = null;
 
         [JsonProperty("values")]
         public Dictionary<string, object> Values { get; set; } = [];
@@ -165,6 +176,11 @@ namespace AbstractImagesGenerator.Misc
             layerQuery.Type = jObject["name"].Value<string>();
             layerQuery.LayerType = layerType;
             layerQuery.Values = jObject["values"]?.ToObject<Dictionary<string, object>>() ?? [];
+            if(layerQuery.Values.TryGetValue("seed", out var seed) && seed is long l)
+            {
+                layerQuery.Seed = l;
+                layerQuery.Values.Remove("seed");
+            }
             layerQuery.BlendingValues = jObject["blending_values"]?.ToObject<Dictionary<string, object>>() ?? [];
 
             if (layerQuery is BlendingQuery blendingQuery)
@@ -182,8 +198,13 @@ namespace AbstractImagesGenerator.Misc
                 { "generator_type", value.LayerType },
             };
 
-            if(value.Values.Count != 0)
+            if(value.Values.Count != 0 || value.Seed != null)
             {
+                var values = new Dictionary<string, object>(value.Values);
+                if (value.Seed != null)
+                {
+                    values["seed"] = value.Seed;
+                }
                 jObject.Add("values", JToken.FromObject(value.Values, serializer));
             }
             if(value.BlendingValues.Count != 0)

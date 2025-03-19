@@ -19,6 +19,12 @@ namespace AbstractImagesGenerator.Misc
         public List<LayerSetting> InheritedSettings { get; set; } = [];
 
         [JsonIgnore]
+        public long? Seed { get; set; } = null;
+
+        [JsonIgnore]
+        public bool Locked { get; set; } = false;
+
+        [JsonIgnore]
         public virtual Layer Copy { get; }
 
         public void UpdateInheritedSettings(List<LayerSetting> newSettings)
