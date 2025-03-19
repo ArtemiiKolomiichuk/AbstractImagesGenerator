@@ -42,12 +42,29 @@
         var query = new QueryObject(1028, 1028, blending);
         var str = JsonConvert.SerializeObject(query);
         var content = new StringContent(str, Encoding.UTF8, "application/json");
-        var response = await httpClient.PostAsync(Program.BaseApiUrl + "/image-generator/query/full?include_metadata=false", content);
+        var response = await httpClient.PostAsync(Program.BaseApiUrl + "/image-generator/query/full?include_metadata=true", content);
         if (response.IsSuccessStatusCode)
         {
-            var imageBytes = await response.Content.ReadAsByteArrayAsync();
-            imageSrc = $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
+            var parser = HttpMultipartParser.MultipartFormDataParser.Parse(await response.Content.ReadAsStreamAsync());
+            Stream imageStream = parser.Files[0].Data;
+            Stream jsonStream = parser.Files[1].Data;
+
+            using (StreamReader reader = new StreamReader(jsonStream))
+            {
+                var json = reader.ReadToEnd();
+            }
+            
+            imageSrc = $"data:image/png;base64,{Convert.ToBase64String(ReadFully(imageStream))}";
             StateHasChanged();
+        }
+    }
+
+    public static byte[] ReadFully(Stream input)
+    {
+        using (MemoryStream ms = new MemoryStream())
+        {
+            input.CopyTo(ms);
+            return ms.ToArray();
         }
     }
 }
