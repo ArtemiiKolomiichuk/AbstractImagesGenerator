@@ -22,7 +22,7 @@
 </div>
 
 
-<button @onclick="GenerateInage">Generate Image</button>
+<button @onclick="GenerateImage">Generate Image</button>
 
 
 @code{
@@ -36,7 +36,7 @@
         blending = (await Blending.GetLayerOptions()).First();
     }
 
-    private async void GenerateInage()
+    private async void GenerateImage()
     {
         var httpClient = new HttpClient();
         var query = new QueryObject(1028, 1028, blending);
@@ -59,7 +59,7 @@
         }
     }
 
-    public static byte[] ReadFully(Stream input)
+    private static byte[] ReadFully(Stream input)
     {
         using (MemoryStream ms = new MemoryStream())
         {

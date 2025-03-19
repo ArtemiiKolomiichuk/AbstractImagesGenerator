@@ -80,7 +80,7 @@
                 {
                     throw new InvalidOperationException("Setting value is not a StringListValue");
                 }
-                bool shrinkable = list.Values.Count > Setting.MinCount;
+                bool shrinkable = list.Values.Count > (Setting.MinCount ?? 0);
                 bool expendable = list.Values.Count < Setting.MaxCount;
                 <div style="display: flex;
                             align-items: center;
@@ -88,20 +88,25 @@
                     @for(int l = 0; l < list.Values.Count; l++)
                     {
                         int i = l;
-                        <div>
+                        <div style="position: relative; margin: 0.5rem;">
                             @if (shrinkable)
                             {
-                                <!-- remove-->
+                                <button @onclick="() => { list.Values.RemoveAt(i); Setting.Value = list; Update(); }"
+                                        style="position: absolute; top: -0.5rem; right: -0.5rem; background: red; color: white; border: none; border-radius: 50%; cursor: pointer;">
+                                    &times;
+                                </button>
                             }
                             <input type="color" value="@(list.Values[i].ToString() ?? string.Empty)" class="color-input-block"
-                                   @oninput="(e) => { list.Values[i] = e.Value.ToString(); Setting.Value = list; Update(); }"  />
+                                @oninput="(e) => { list.Values[i] = e.Value.ToString(); Setting.Value = list; Update(); }" />
                         </div>
                     }
                     @if (expendable)
                     {
-                        <!-- plus one-->
+                    <span @onclick="() => { list.Values.Add(RandomColor()); Setting.Value = list; Update(); }" style="height: 2rem;-webkit-user-select: none;"  title="Add Color">
+                            <Ico Class="icon-button pink" Icon="@Icons.Add" Size="2" />
+                        </span>
                     }
-                    <span @onclick="() => Setting.Value = RandomPalette(list.Values.Count).ToList()" style="height: 2rem;-webkit-user-select: none;">
+                    <span @onclick="() => Setting.Value = RandomPalette(list.Values.Count).ToList()" style="height: 2rem;-webkit-user-select: none;" title="Randomize Colors">
                         <Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
                     </span>
                 </div>

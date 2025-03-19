@@ -113,7 +113,7 @@ namespace AbstractImagesGenerator.Misc
         public object? MaxValue { get; set; }
         [JsonProperty("possible_values")]
         public Dictionary<string, SettingValue>? PossibleValues { get; set; }
-        [JsonProperty("min_length")]
+        [JsonProperty("min_count")]
         public int? MinCount { get; set; }
         [JsonProperty("max_count")]
         public int? MaxCount { get; set; }

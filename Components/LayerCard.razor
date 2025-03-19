@@ -42,7 +42,8 @@
                         layer.UpdateInheritedSettings(_blending.HereditarySettings);
                         _blending.SubLayers.Add(layer);
                         StateHasChanged();
-                    }" style="margin-right: 6px;">
+                    }" style="margin-right: 6px;"
+                    title="Add SubLayer">
                     <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
                 </span>
                 <!--CHANGE BLENDING TYPE-->
@@ -52,7 +53,7 @@
                             return;
                         //TODO: Implement blending type change
                         Update();
-                    }">
+                    }" title="Change Type">
                     <Ico Class="icon-button violet" Icon="@Icons.Customize" Size="2" Color="#7160e8" />
                 </span>
             }
@@ -69,16 +70,16 @@
                             __blending.SubLayers.Add(layer);
                             StateHasChanged();
                         }" 
-                        style="margin-right: 6px;">
+                        style="margin-right: 6px;" title="Add SubLayer">
                         <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
                     </span>
                 }
                 <!--DUPLICATE-->
-                <span @onclick="() => {ParentList!.Insert(ParentList.IndexOf(Layer) + 1, Layer.Copy); Update();}" style="margin-right: 5px; margin-top: 1px;">
+                <span @onclick="() => {ParentList!.Insert(ParentList.IndexOf(Layer) + 1, Layer.Copy); Update();}" style="margin-right: 5px; margin-top: 1px;" title="Duplicate">
                     <Ico Class="icon-button violet" Icon="@Icons.DuplicateLayer" Size="2" Color="#7160e8" />
                 </span>
                 <!--DELETE-->
-                <span @onclick="() => {ParentList!.Remove(Layer); Update();}">
+            <span @onclick="() => {ParentList!.Remove(Layer); Update();}" title="Delete">
                     <Ico Class="icon-button red" Icon="@Icons.Delete" Size="2" Color="#f06270" />
                 </span>
             }
