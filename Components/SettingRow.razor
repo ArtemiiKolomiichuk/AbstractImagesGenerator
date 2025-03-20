@@ -91,10 +91,9 @@
                         <div style="position: relative; margin: 0.5rem;">
                             @if (shrinkable)
                             {
-                                <button @onclick="() => { list.Values.RemoveAt(i); Setting.Value = list; Update(); }"
-                                        style="position: absolute; top: -0.5rem; right: -0.5rem; background: red; color: white; border: none; border-radius: 50%; cursor: pointer;">
+                                <span class="color-x-button" @onclick="() => { list.Values.RemoveAt(i); Setting.Value = list; Update(); }">
                                     &times;
-                                </button>
+                                </span>
                             }
                             <input type="color" value="@(list.Values[i].ToString() ?? string.Empty)" class="color-input-block"
                                 @oninput="(e) => { list.Values[i] = e.Value.ToString(); Setting.Value = list; Update(); }" />

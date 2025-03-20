@@ -1,0 +1,61 @@
+﻿.glare-container {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.glare {
+    position: absolute;
+    top: -150%;
+    left: -150%;
+    width: 150%;
+    height: 200%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%);
+    transform: rotate(45deg);
+    mask-size: 100%;
+    mask-position: -50%;
+    animation: shine 1.6s linear infinite;
+}
+
+@keyframes shine {
+    0% {
+        top: -150%;
+        left: -150%;
+    }
+
+    100% {
+        top: 150%;
+        left: 150%;
+    }
+}
+
+@property --a {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false
+}
+
+.img-still-cont {
+    border: solid 8px #dbdbdb;
+    border-radius: 20px;
+    background: none;
+}
+
+.img-cont {
+    border-radius: 20px;
+    border: solid 8px #0000;
+    background: repeating-conic-gradient(from var(--a, 0deg), var(--l, #0000 0% 70%, #0000ff7f)) border-box;
+    animation: a 2s linear infinite;
+}
+
+.img {
+    background: white;
+    margin-bottom:-5px;
+    border-radius: 12px;
+}
+
+@keyframes a {
+    to {
+        --a: 1turn
+    }
+}
