@@ -27,7 +27,9 @@
                 }
 
                 <div style="margin-top: -5px; color:#545454">
-                    <i>@Layer.Type</i>
+                    <i>
+                        @LayerType
+                    </i>
                 </div>
             </div>
         </div>
@@ -38,7 +40,7 @@
                 if(Layer.HideContent)
                 {
                     <div title="Details Hidden" style="cursor:pointer; margin-right: 2px; display:flex;" 
-                        @onclick="() => {
+                    @onclick="() => {
                             Layer.HideContent = false;
                             StateHasChanged();
                         }">
@@ -47,8 +49,8 @@
                 }
                 else
                 {
-                <div title="Details Shown" style="cursor:pointer; margin-right: 2px; display:flex;"
-                        @onclick="() => {
+                    <div title="Details Shown" style="cursor:pointer; margin-right: 2px; display:flex;"
+                    @onclick="() => {
                             Layer.HideContent = true;
                             StateHasChanged();
                         }">
@@ -61,7 +63,7 @@
             {
                 if (ParentLocked)
                 {
-                    <div title="Inherited Lock" style="cursor:help; margin-right: 2px; margin-left: -9px; display:flex;">
+                    <div title="Inherited Lock" style="cursor:help; margin: 2px 2px 0px -9px; display:flex;">
                         <div style="margin-top: -6px; margin-right:-10px;">
                             <Ico Class="icon-button" Icon="@Icons.ArrowDownRight" Size="2" Color="#41414180" />
                         </div>
@@ -185,6 +187,7 @@
     [Parameter]
     public bool ParentLocked { get; set; } = false;
 
+    private string LayerType { get; set; }
 
     private bool editingTitle = false;
 
@@ -225,5 +228,20 @@
         await Task.Delay(10);
         if (editTitleInput == null || editTitleInput.Value.Id == null) return;
         await editTitleInput.Value.FocusAsync();
+    }
+
+    public async Task<string> GetLayerType()
+    {
+        return Layer switch
+        {
+            Blending b => (await Blending.GetLayerOptions()).First(l => l.Type == b.Type).Title,
+            Drawing d => (await Drawing.GetLayerOptions()).First(l => l.Type == d.Type).Title,
+            _ => throw new NotImplementedException()
+        };    
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        LayerType = await GetLayerType();
     }
 }

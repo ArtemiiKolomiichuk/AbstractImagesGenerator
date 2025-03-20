@@ -8,6 +8,7 @@
     <div class="image-block" style="display:flex; flex-direction: column;">
         <UpdatableImage ImageSrc="@imageSrc" Id="main-img" Loading="@generating"/>
         <div style="display:flex; margin: 1rem 0; align-items: center; justify-content: center;">
+            <Selector Options="@ResolutionOptions" Title="640x480" OnSelect="(s) => {resolution = s; StateHasChanged();}" Class="selector" />
             <button class="bttn" @onclick="GenerateImage">Generate Image</button>
         </div>
     </div>
@@ -21,11 +22,13 @@
 
 
 @code{
-    private string imageSrc = "R.jpg";
+    private string imageSrc = "placeholder.jpg";
     private string? errorMessage = null;
     public static Blending blending;
     public static LayersModal Modal;
     private bool generating = false;
+    private List<string> ResolutionOptions = ["800x600", "1024x1024", "1280x720", "1920x1080", "1920x1200", "2160x1080", "2560x1440", "2560x2560", "3840x2160"];
+    private string resolution = "640x480";
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,7 +39,13 @@
     private async void GenerateImage()
     {
         var httpClient = new HttpClient();
-        var query = new QueryObject(1028, 1028, blending);
+        if (string.IsNullOrWhiteSpace(resolution))
+        {
+            resolution = "640x480";
+        }
+        var x = resolution.Split('x')[0];
+        var y = resolution.Split('x')[1];
+        var query = new QueryObject(int.Parse(x), int.Parse(y), blending);
         var str = JsonConvert.SerializeObject(query);
         var content = new StringContent(str, Encoding.UTF8, "application/json");
         generating = true;
