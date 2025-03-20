@@ -1,0 +1,26 @@
+﻿.icon-button {
+    border-radius: 0.4em;
+    background-color: none;
+    transition: background-color 0.4s;
+}
+
+    .icon-button.red:hover {
+        background-color: #f0627040;
+    }
+
+    .icon-button.violet:hover {
+        background-color: #7160e840;
+    }
+
+    .icon-button.grey:hover {
+        background-color: #75757540;
+    }
+
+.pink {
+    fill: mediumvioletred;
+    background-color: #7160e800;
+}
+
+    .pink:hover {
+        background-color: #e551bf40;
+    }

@@ -1,0 +1,52 @@
+﻿.sortable-ghost {
+    visibility: hidden;
+}
+
+.sortable-fallback {
+    opacity: 1 !important
+}
+
+#main-img {
+    width: 30vw;
+    height: auto;
+    margin-bottom: -5px;
+}
+
+@media (orientation:landscape) {
+    .image-block {
+        margin-right: 2rem;
+    }
+}
+
+@media screen and (orientation:portrait) {
+    .generation-block {
+        flex-direction: column;
+    }
+
+    .layers-list {
+        width: 70%;
+        max-height: 50vh;
+    }
+
+    #main-img {
+        width: 70vw !important
+    }
+}
+
+
+
+
+button {
+    border-radius: 0.6em;
+    background-color: #eaeaea;
+    outline: #d1d1d1 solid 2px;
+    padding: 0px 12px;
+    border: none;
+    font-size: 1.1rem;
+    transition: background-color 0.4s;
+}
+
+    button:hover {
+        background-color: #dfdfdf;
+    }
+
