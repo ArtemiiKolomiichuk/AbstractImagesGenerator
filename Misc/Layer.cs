@@ -125,7 +125,10 @@ namespace AbstractImagesGenerator.Misc
         [JsonProperty("max_value")]
         public object? MaxValue { get; set; }
         [JsonProperty("possible_values")]
-        public Dictionary<string, SettingValue>? PossibleValues { get; set; }
+        internal List<EnumValue>? EnumValues { get; set; }
+        
+        public Dictionary<string, SettingValue>? PossibleValues => EnumValues?.ToDictionary(x => x.Name, x => x.Value);
+
         [JsonProperty("min_count")]
         public int? MinCount { get; set; }
         [JsonProperty("max_count")]
@@ -155,7 +158,7 @@ namespace AbstractImagesGenerator.Misc
                     },
                     MinValue = MinValue,
                     MaxValue = MaxValue,
-                    PossibleValues = PossibleValues,
+                    EnumValues = [..EnumValues?.Select(e => e.Copy) ?? []],
                     MinCount = MinCount,
                     MaxCount = MaxCount
                 };
@@ -165,6 +168,31 @@ namespace AbstractImagesGenerator.Misc
 
         public static bool operator ==(LayerSetting a, LayerSetting b) => a.Type == b.Type && a.DataType == b.DataType && a.VisibleType == b.VisibleType && a.MinValue == b.MinValue && a.MaxValue == b.MaxValue && a.MinCount == b.MinCount && a.MaxCount == b.MaxCount;
         public static bool operator !=(LayerSetting a, LayerSetting b) => !(a == b);
+    }
+
+    internal class EnumValue
+    {
+        [JsonProperty("value")]
+        public SettingValue Value { get; set; }
+
+        [JsonProperty("visible_value")]
+        public string Name { get; set; }
+
+        internal EnumValue Copy => new()
+        {
+            Value = Value switch
+            {
+                IntValue intRecord => new IntValue(intRecord.Value),
+                FloatValue floatRecord => new FloatValue(floatRecord.Value),
+                BoolValue boolValue => new BoolValue(boolValue.Value),
+                IntTupleValue intTupleValue => new IntTupleValue((intTupleValue.Values.Item1, intTupleValue.Values.Item2)),
+                FloatTupleValue floatTupleValue => new FloatTupleValue((floatTupleValue.Values.Item1, floatTupleValue.Values.Item2)),
+                StringListValue stringListValue => new StringListValue([.. stringListValue.Values]),
+                StringValue stringValue => new StringValue(stringValue.Value),
+                _ => throw new NotImplementedException()
+            },
+            Name = Name
+        };
     }
 
 

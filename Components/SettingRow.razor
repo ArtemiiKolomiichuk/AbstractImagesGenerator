@@ -71,7 +71,15 @@
             break;
         case PropertyDisplayType.Dropdown:
             {
-                <Selector Options="@([..Setting.PossibleValues!.Keys])" OnSelect="(s) => Setting.Value = Setting.PossibleValues[s]" />
+                <Selector Class="selector" Options="@([..Setting.PossibleValues!.Keys.Skip(1)])" Title="@Setting.PossibleValues.First().Key"
+                OnSelect="(s) => {
+                    if(string.IsNullOrWhiteSpace(s))
+                    {
+                        Setting.Value = Setting.PossibleValues.First().Value;
+                        return;
+                    }
+                    Setting.Value = Setting.PossibleValues[s];
+                }"/>
             }
             break;
         case PropertyDisplayType.Colors:
