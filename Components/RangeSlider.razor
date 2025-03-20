@@ -31,13 +31,15 @@
     [Parameter]
     public T Min { get; set; }
 
+    private T _minValue;
+
     [Parameter]
     public T MinValue
     {
-        get;
+        get => _minValue;
         set
         {
-            field = value;
+            _minValue = value;
             if(value.CompareTo(MaxValue) > 0)
             {
                 if (!MaxValue.Equals(value))
@@ -51,13 +53,15 @@
         }
     }
 
+    private T _maxValue;
+
     [Parameter]
     public T MaxValue
     {
-        get;
+        get => _maxValue;
         set
         {
-            field = value;
+            _maxValue = value;
             if(value.CompareTo(MinValue) < 0)
             {
                 if (!MinValue.Equals(value))

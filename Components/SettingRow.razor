@@ -8,17 +8,18 @@
         case PropertyDisplayType.Slider:
             {
                 <input type="range" min="@(Setting.MinValue ?? 0)" max="@(Setting.MaxValue ?? 0)" 
-                step="@(Setting.DataType == PropertyValueType.Float ? 0.01 : 1)" 
-                value="@(Setting.Value switch {
-                    FloatValue floatValue => floatValue.Value,
-                    IntValue intValue => intValue.Value
-                })"
-                @onchange ="(e) => 
+                    step="@(Setting.DataType == PropertyValueType.Float ? 0.01 : 1)" 
+                    value="@(Setting.Value switch {
+                        FloatValue floatValue => floatValue.Value,
+                        IntValue intValue => intValue.Value
+                    })"
+                    @onchange ="(e) => 
                        { 
+                            double val = double.Parse(e.Value.ToString());
                             Setting.Value = Setting.DataType switch
                             {
-                                PropertyValueType.Float => double.Parse(e.Value.ToString()),
-                                PropertyValueType.Int => int.Parse(e.Value.ToString()),
+                                PropertyValueType.Float => new FloatValue(val),
+                                PropertyValueType.Int => (int)val,
                                 _ => throw new NotImplementedException()
                             };
                             StateHasChanged();

@@ -10,7 +10,6 @@ namespace AbstractImagesGenerator.Misc
         public static implicit operator SettingValue((int, int) values) => new IntTupleValue((values.Item1, values.Item2));
         public static implicit operator SettingValue((double, double) values) => new FloatTupleValue((values.Item1, values.Item2));
         public static implicit operator SettingValue(int value) => new IntValue(value);
-        public static implicit operator SettingValue(double value) => new FloatValue(value);
         public static implicit operator SettingValue(bool value) => new BoolValue(value);
         public static implicit operator SettingValue(string value) => new StringValue(value);
 
@@ -19,14 +18,15 @@ namespace AbstractImagesGenerator.Misc
             return o switch
             {
                 int i => i,
-                double d => d,
+                double d => new FloatValue(d),
                 bool b => b,
                 string s => s,
                 List<string> l => l,
                 int[] i => (i[0], i[1]),
                 double[] d => (d[0], d[1]),
                 JArray j => FromObject(FromJArray(j)),
-                _ => throw new ArgumentException("Unknown object type"),
+                JValue jValue => FromObject(jValue.Value ?? throw new NullReferenceException("Setting value is null")),
+                _ => int.TryParse(o.ToString(), out int i) ? i : (double.TryParse(o.ToString(), out double d) ? new FloatValue(d) : throw new ArgumentException("SettingValue val ;["))
             };
         }
 

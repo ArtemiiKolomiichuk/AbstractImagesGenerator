@@ -33,18 +33,18 @@
                 </div>
             </div>
         </div>
-        <div style="display:flex">
+        <div style="display:flex;margin-left: 2rem;">
             <!--CONTENT VISIBILITY-->
             @if (!IsFinalBlending)
             {
                 if(Layer.HideContent)
                 {
-                    <div title="Details Hidden" style="cursor:pointer; margin-right: 2px; display:flex;" 
+                    <div title="Details Hidden" style="cursor:pointer; margin-right: 4px; display:flex;" 
                     @onclick="() => {
                             Layer.HideContent = false;
                             StateHasChanged();
                         }">
-                        <Ico Class="icon-button grey" Icon="@Icons.DetailsHidden" Size="2" Color="#414141" />
+                        <Ico Class="icon-button grey" Icon="@Icons.NoList" Size="2" Color="#414141" />
                     </div>
                 }
                 else
@@ -54,7 +54,7 @@
                             Layer.HideContent = true;
                             StateHasChanged();
                         }">
-                        <Ico Class="icon-button grey" Icon="@Icons.DetailsVisible" Size="2" Color="#414141" />
+                        <Ico Class="icon-button grey" Icon="@Icons.List" Size="2" Color="#414141" />
                     </div>
                 }
             }
@@ -240,8 +240,9 @@
         };    
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        await base.OnParametersSetAsync();
         LayerType = await GetLayerType();
     }
 }
