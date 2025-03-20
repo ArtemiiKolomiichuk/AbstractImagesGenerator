@@ -6,10 +6,10 @@
 
 <div class="generation-block" style="display: flex; justify-content: center; align-items: center;">
     <div class="image-block" style="display:flex; flex-direction: column;">
-        <UpdatableImage ImageSrc="@imageSrc" Id="main-img" Loading="@generating"/>
+        <UpdatableImage ImageSrc="@imageSrc" Id="main-img" Loading="@generating" ErrorMessage="@errorMessage"/>
         <div style="display:flex; margin: 1rem 0; align-items: center; justify-content: center;">
             <Selector Options="@ResolutionOptions" Title="640x480" OnSelect="(s) => {resolution = s; StateHasChanged();}" Class="selector" />
-            <button class="bttn" @onclick="GenerateImage">Generate Image</button>
+            <button class="bttn" @onclick="GenerateImage" disabled="@generating">Generate Image</button>
         </div>
     </div>
     <div class="layers-list" style="display:flex; flex-direction: column;">
@@ -33,11 +33,33 @@
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
-        blending = (await Blending.GetLayerOptions()).First();
+        try
+        {
+            blending = (await Blending.GetLayerOptions()).First();
+        }
+        catch (Exception e)
+        {
+            errorMessage = "Server is unavailable, try again later";
+            #if DEBUG
+                errorMessage = "The server is not running (fetching layer options unavailable)\n\n";
+                errorMessage += e.Message;
+            #endif
+            StateHasChanged();
+        }
     }
 
     private async void GenerateImage()
     {
+        if (blending == null)
+        {
+            errorMessage = "Reload the page to try again";
+            StateHasChanged();
+            return;
+        }
+        if (generating)
+        {
+            return;
+        }
         var httpClient = new HttpClient();
         if (string.IsNullOrWhiteSpace(resolution))
         {
@@ -45,30 +67,66 @@
         }
         var x = resolution.Split('x')[0];
         var y = resolution.Split('x')[1];
-        var query = new QueryObject(int.Parse(x), int.Parse(y), blending);
-        var str = JsonConvert.SerializeObject(query);
-        var content = new StringContent(str, Encoding.UTF8, "application/json");
-        generating = true;
-        StateHasChanged();
-        var response = await httpClient.PostAsync(Program.BaseApiUrl + "/image-generator/query/full?include_metadata=true", content);
-        if (response.IsSuccessStatusCode)
+        try
         {
-            var parser = HttpMultipartParser.MultipartFormDataParser.Parse(await response.Content.ReadAsStreamAsync());
-            Stream imageStream = parser.Files[0].Data;
-            Stream jsonStream = parser.Files[1].Data;
-
-            using (StreamReader reader = new StreamReader(jsonStream))
+            var query = new QueryObject(int.Parse(x), int.Parse(y), blending);
+            var str = JsonConvert.SerializeObject(query);
+            var content = new StringContent(str, Encoding.UTF8, "application/json");
+            generating = true;
+            StateHasChanged();
+            try
             {
-                var json = reader.ReadToEnd();
-                var blending = (await QueryObject.Deconstruct(json)).Value.Item1;
-                Console.WriteLine(blending.Seed);
-                Home.blending.Seed = blending.Seed;
-                SetSeeds(Home.blending.SubLayers, blending.SubLayers);
-                StateHasChanged();
+                var response = await httpClient.PostAsync(Program.BaseApiUrl + "/image-generator/query/full?include_metadata=true", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var parser = HttpMultipartParser.MultipartFormDataParser.Parse(await response.Content.ReadAsStreamAsync());
+                    Stream imageStream = parser.Files[0].Data;
+                    Stream jsonStream = parser.Files[1].Data;
+
+                    using (StreamReader reader = new StreamReader(jsonStream))
+                    {
+                        var json = reader.ReadToEnd();
+                        var blending = (await QueryObject.Deconstruct(json)).Value.Item1;
+                        Console.WriteLine(blending.Seed);
+                        Home.blending.Seed = blending.Seed;
+                        SetSeeds(Home.blending.SubLayers, blending.SubLayers);
+                        StateHasChanged();
+                    }
+
+                    imageSrc = $"data:image/jpg;base64,{Convert.ToBase64String(ReadFully(imageStream))}";
+                    errorMessage = null;
+                    generating = false;
+                    StateHasChanged();
+                }
+                else
+                {
+                    generating = false;
+                    errorMessage = "An error occurred while generating your image";
+                    #if DEBUG
+                        errorMessage = await response.Content.ReadAsStringAsync();
+                    #endif
+                    StateHasChanged();
+                }
             }
-            
-            imageSrc = $"data:image/jpg;base64,{Convert.ToBase64String(ReadFully(imageStream))}";
+            catch
+            {
+                generating = false;
+                errorMessage = "Server is unavailable, try again later";
+                #if DEBUG
+                    errorMessage = "The server is not running\n\n";
+                    errorMessage += "Generating Image request not responded";
+                #endif
+                StateHasChanged();
+            }        
+        }
+        catch (Exception e)
+        {
             generating = false;
+            errorMessage = "An error occurred while generating your image";
+            #if DEBUG
+                errorMessage = "A problem with query\n\n";
+                errorMessage += e.Message;
+            #endif
             StateHasChanged();
         }
     }

@@ -1,6 +1,13 @@
 ﻿<div class="glare-container" style="width: fit-content; height: fit-content;">
     <div class="@(Loading ? "img-cont" : "img-still-cont")" style="--l: #ff4545, #00ff99, #006aff, #ff0095, #ff4545">
-        <img class="img" id="@Id" src="@ImageSrc"/>
+        @if (ErrorMessage != null)
+        {
+            <div class="error-message">@ErrorMessage</div>
+        }
+        else
+        {
+            <img class="img" id="@Id" src="@ImageSrc" />
+        }
     </div>
     @if(Loading)
     {
@@ -12,6 +19,9 @@
 @code {
     [Parameter]
     public string ImageSrc { get; set; }
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
 
     [Parameter]
     public string Id { get; set; }

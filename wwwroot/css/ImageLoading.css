@@ -29,10 +29,16 @@
     }
 }
 
-@property --a {
-    syntax: "<angle>";
-    initial-value: 0deg;
-    inherits: false
+.error-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 6rem;
+    font-size: 2rem;
+    color: #c30101;
+    white-space: pre-wrap;
+    background: white;
+    border-radius: 20px;
 }
 
 .img-still-cont {
@@ -52,6 +58,12 @@
     background: white;
     margin-bottom:-5px;
     border-radius: 12px;
+}
+
+@property --a {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false
 }
 
 @keyframes a {
