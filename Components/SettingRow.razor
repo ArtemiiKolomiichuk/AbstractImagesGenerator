@@ -94,39 +94,48 @@
                 <div style="display: flex;
                             align-items: center;
                             flex-wrap: wrap;">
-                    @for(int l = 0; l < list.Values.Count; l++)
-                    {
-                        int i = l;
-                        <div class="color-input-block">
-                            <div class="color-value" 
-                                 style="@($"background-color: {list.Values[i]?.ToString() ?? "black"};")"
-                                 @onclick="async (e) => {
-                                     var modal = AbstractImagesGenerator.Pages.Home.ColorModal;
-                                     modal.SetColor(list.Values[i]);
-                                     modal.SetCanDelete(shrinkable);
-                                     await modal.Configure(e);
-                                     modal.SetOnColorChanged((c) => {
-                                         list.Values[i] = c;
-                                         Setting.Value = list;
-                                         StateHasChanged();
-                                     });
-                                     var (color, delete) = await modal.ShowAsync();
-                                     if(delete)
-                                     {
-                                        list.Values.RemoveAt(i);
-                                        Setting.Value = list;
-                                        Update();
+                    <SortableList Handle=".drag-handle" Items="list.Values"
+                    OnUpdate="(x) => { SortList(x); StateHasChanged(); }" 
+                    Context="item">
+                        <SortableItemTemplate>
+                            <div class="color-input-block">
+                                <div class="color-value"
+                                style="@($"background-color: {list.Values[list.Values.IndexOf(item)]?.ToString() ?? "black"};")"
+                                @onclick="async (e) => {
+                                        var modal = AbstractImagesGenerator.Pages.Home.ColorModal;
+                                        modal.SetColor(list.Values[list.Values.IndexOf(item)]);
+                                        modal.SetCanDelete(shrinkable);
+                                        await modal.Configure(e);
+                                        modal.SetOnColorChanged((c) =>
+                                        {
+                                                list.Values[list.Values.IndexOf(item)] = c;
+                                                Setting.Value = list;
+                                                StateHasChanged();
+                                        });
+                                        var (color, delete) = await modal.ShowAsync();
+                                        if (delete)
+                                        {
+                                            list.Values.RemoveAt(list.Values.IndexOf(item));
+                                            Setting.Value = list;
+                                            Update();
+                                        }
+                                        else if (color != null)
+                                        {
+                                            list.Values[list.Values.IndexOf(item)] = color;
+                                            Setting.Value = list;
+                                            Update();
+                                        }
                                      }
-                                     else if (color != null)
-                                     {
-                                        list.Values[i] = color;
-                                        Setting.Value = list;
-                                        Update();
-                                     }
-                                 }"
-                            />
-                        </div>
-                    }
+                                "/>
+                                @if(list.Values.Count > 1)
+                                {
+                                    <div class="drag-handle" style="cursor: grab; -webkit-user-select: none; display: flex; justify-content: center;margin-top: -3px;">
+                                        @((MarkupString)Icons.DragBottom)
+                                    </div>
+                                }
+                            </div>
+                        </SortableItemTemplate>
+                    </SortableList>
                     @if (expendable)
                     {
                         <span @onclick="() => { list.Values.Add(RandomColor()); Setting.Value = list; Update(); }" style="height: 2rem;-webkit-user-select: none;"  title="Add Color">
@@ -151,6 +160,27 @@
 
     [Parameter]
     public Action Update { get; set; }
+
+    private void SortList((int oldIndex, int newIndex, string toId, string fromId) indices)
+    {
+        var (oldIndex, newIndex, _, _) = indices;
+        var list = (Setting.Value as StringListValue)?.Values;
+        if (list == null) return;
+
+        var itemToMove = list[oldIndex];
+        list.RemoveAt(oldIndex);
+
+        if (newIndex < list.Count)
+        {
+            list.Insert(newIndex, itemToMove);
+        }
+        else
+        {
+            list.Add(itemToMove);
+        }
+
+        StateHasChanged();
+    }
 
     private static string RandomColor()
     {
