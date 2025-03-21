@@ -1,6 +1,6 @@
 ﻿
-<div style="display: flex; align-items:center">
-    <div class="@(Inherited ? "setting-row inherited" : "setting-row")" style="padding-right:1em">
+<div class="setting-row">
+    <div class="@(Inherited ? "setting-row-title inherited" : "setting-row-title")" style="padding-right:1em">
         @Setting.Title
     </div>
     @switch (Setting.VisibleType)
@@ -8,12 +8,12 @@
         case PropertyDisplayType.Slider:
             {
                 <input type="range" min="@(Setting.MinValue ?? 0)" max="@(Setting.MaxValue ?? 0)" 
-                    step="@(Setting.DataType == PropertyValueType.Float ? 0.01 : 1)" 
-                    value="@(Setting.Value switch {
+                step="@(Setting.DataType == PropertyValueType.Float ? 0.01 : 1)" 
+                value="@(Setting.Value switch {
                         FloatValue floatValue => floatValue.Value,
                         IntValue intValue => intValue.Value
                     })"
-                    @onchange ="(e) => 
+                @onchange ="(e) => 
                        { 
                             double val = double.Parse(e.Value.ToString());
                             Setting.Value = Setting.DataType switch
@@ -46,7 +46,7 @@
                         FloatTupleValue floatTupleValue => (floatTupleValue.Values.Item1, floatTupleValue.Values.Item2),
                         IntTupleValue intTupleValue => (intTupleValue.Values.Item1, intTupleValue.Values.Item2)
                     };
-                    
+
                     if(r.Item1 == val.Item1 && r.Item2 == val.Item2)
                     {
                         return;
@@ -97,20 +97,39 @@
                     @for(int l = 0; l < list.Values.Count; l++)
                     {
                         int i = l;
-                        <div style="position: relative; margin: 0.5rem;">
-                            @if (shrinkable)
-                            {
-                                <span class="color-x-button" @onclick="() => { list.Values.RemoveAt(i); Setting.Value = list; Update(); }">
-                                    &times;
-                                </span>
-                            }
-                            <input type="color" value="@(list.Values[i].ToString() ?? string.Empty)" class="color-input-block"
-                                @oninput="(e) => { list.Values[i] = e.Value.ToString(); Setting.Value = list; Update(); }" />
+                        <div class="color-input-block">
+                            <div class="color-value" 
+                                 style="@($"background-color: {list.Values[i]?.ToString() ?? "black"};")"
+                                 @onclick="async (e) => {
+                                     var modal = AbstractImagesGenerator.Pages.Home.ColorModal;
+                                     modal.SetColor(list.Values[i]);
+                                     modal.SetCanDelete(shrinkable);
+                                     await modal.Configure(e);
+                                     modal.SetOnColorChanged((c) => {
+                                         list.Values[i] = c;
+                                         Setting.Value = list;
+                                         StateHasChanged();
+                                     });
+                                     var (color, delete) = await modal.ShowAsync();
+                                     if(delete)
+                                     {
+                                        list.Values.RemoveAt(i);
+                                        Setting.Value = list;
+                                        Update();
+                                     }
+                                     else if (color != null)
+                                     {
+                                        list.Values[i] = color;
+                                        Setting.Value = list;
+                                        Update();
+                                     }
+                                 }"
+                            />
                         </div>
                     }
                     @if (expendable)
                     {
-                    <span @onclick="() => { list.Values.Add(RandomColor()); Setting.Value = list; Update(); }" style="height: 2rem;-webkit-user-select: none;"  title="Add Color">
+                        <span @onclick="() => { list.Values.Add(RandomColor()); Setting.Value = list; Update(); }" style="height: 2rem;-webkit-user-select: none;"  title="Add Color">
                             <Ico Class="icon-button pink" Icon="@Icons.Add" Size="2" />
                         </span>
                     }
@@ -119,7 +138,7 @@
                     </span>
                 </div>
             }
-        break;
+            break;
     }
 </div>
 
@@ -132,7 +151,6 @@
 
     [Parameter]
     public Action Update { get; set; }
-
 
     private static string RandomColor()
     {

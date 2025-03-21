@@ -38,9 +38,6 @@
 @code {
     private bool IsVisible { get; set; } = false;
 
-    [Parameter]
-    public Action<Layer>? OnClose { get; set; }
-
     private List<Blending> Blendings { get; set; } = new();
 
     private List<Drawing> Drawings { get; set; } = new();

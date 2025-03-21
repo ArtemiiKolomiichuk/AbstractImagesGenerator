@@ -1,0 +1,87 @@
+﻿@if (IsVisible)
+{
+    <div class="color-modal-overlay" @onclick="() => CloseModal(null)" @onclick:stopPropagation="false">
+        <div class="color-modal-content" style="@($"left:{offset.x}px; top:{offset.y}px;")" @onclick:stopPropagation="true">
+            <ColorPicker SelectedColor="@color" SelectedColorChanged="(c) => {color = c; onColorChanged?.Invoke(c);}" />
+            @if (canDelete)
+            {
+                <span class="color-delete-block">
+                    <button class="bttn color-delete" @onclick="DeleteColor">Delete</button>
+                </span>
+            }
+        </div>
+    </div>
+}
+
+@inject IJSRuntime JS
+@code {
+    private bool IsVisible { get; set; } = false;
+
+    private TaskCompletionSource<(string?, bool)>? _tcs;
+
+    private bool canDelete = false;
+
+    private Action<string>? onColorChanged;
+
+    private string color = "#FF0000";
+
+    private (double x, double y) offset;
+
+    public async Task Configure(MouseEventArgs e)
+    {
+        offset = (e.ClientX - e.OffsetX, e.ClientY - e.OffsetY + 36);
+        bool putUp = await JS.InvokeAsync<bool>("isBottomPart", e.ClientY);
+        if (putUp)
+        {
+            offset = (offset.x, e.ClientY - e.OffsetY - 36 - (canDelete ? 255 : 230));
+        }
+        bool fitsRight = await JS.InvokeAsync<bool>("fitsToTheRight", e.ClientX, 300);
+        if (!fitsRight)
+        {
+            offset = (e.ClientX - e.OffsetX - 195, offset.y);
+        }
+    }
+
+    public void SetColor(string? hex)
+    {
+        if (hex == null)
+        {
+            return;
+        }
+        color = hex;
+    }
+
+    public void SetCanDelete(bool canDelete)
+    {
+        this.canDelete = canDelete;
+    }
+
+    public void SetOnColorChanged(Action<string> onColorChanged)
+    {
+        this.onColorChanged = onColorChanged;
+    }
+
+    public Task<(string?,bool)> ShowAsync()
+    {
+        IsVisible = true;
+        _tcs = new();
+        StateHasChanged();
+        return _tcs.Task;
+    }
+
+    private void CloseModal(string? color)
+    {
+        canDelete = false;
+        onColorChanged = null;
+        IsVisible = false;
+        _tcs?.SetResult((color,false));
+        StateHasChanged();
+    }
+
+    private void DeleteColor()
+    {
+        IsVisible = false;
+        _tcs?.SetResult((null, true));
+        StateHasChanged();
+    }
+}
