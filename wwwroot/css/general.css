@@ -42,7 +42,24 @@
 }
 
 
+.download {
+    position: absolute;
+    right: 0.8rem;
+    bottom: 0.4rem;
+}
 
+.download-ico {
+    background-color: #e5e5e540;
+    transition: background-color 0.4s;
+    transition: fill 0.4s;
+    border-radius: 0.6rem;
+}
+
+    .download-ico:hover {
+        background-color: #dfdfdf90;
+        fill: #ffffff;
+        cursor: pointer;
+    }
 
 button {
     border-radius: 0.6em;

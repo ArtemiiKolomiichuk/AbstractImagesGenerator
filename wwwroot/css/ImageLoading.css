@@ -6,26 +6,26 @@
 
 .glare {
     position: absolute;
-    top: -150%;
-    left: -150%;
-    width: 150%;
-    height: 200%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%);
+    top: -500%;
+    left: -200%;
+    width: 40%;
+    height: 300%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.02) 50%);
     transform: rotate(45deg);
     mask-size: 100%;
     mask-position: -50%;
-    animation: shine 1.6s linear infinite;
+    animation: shine 1.8s linear infinite;
 }
 
 @keyframes shine {
     0% {
-        top: -150%;
-        left: -150%;
+        top: -400%;
+        left: -100%;
     }
 
     100% {
         top: 150%;
-        left: 150%;
+        left: 100%;
     }
 }
 
