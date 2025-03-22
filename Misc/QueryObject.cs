@@ -11,7 +11,7 @@ namespace AbstractImagesGenerator.Misc
         {
             Width = width;
             Height = height;
-            FinalBlending = new BlendingQuery(blending);
+            FinalBlending = new BlendingQuery(blending.Copy);
         }
 
         [JsonProperty("width")]
@@ -111,6 +111,14 @@ namespace AbstractImagesGenerator.Misc
         {
             Type = drawing.Type;
             LayerType = "algorithm";
+            if (drawing.Locked)
+            {
+                Seed = drawing.Seed;
+            }
+            else
+            {
+                Seed = null;
+            }
             Values = [];
             foreach (var setting in drawing.Settings)
             {
@@ -135,6 +143,16 @@ namespace AbstractImagesGenerator.Misc
         {
             Type = blending.Type;
             LayerType = "blending";
+            if (blending.Locked)
+            {
+                Seed = blending.Seed;
+                blending.SubLayers.ForEach(x => x.Locked = true);
+            }
+            else
+            {
+                Seed = null;
+            }
+
             SubLayers = [];
             foreach (var layer in blending.SubLayers ?? [])
             {
@@ -205,7 +223,7 @@ namespace AbstractImagesGenerator.Misc
                 {
                     values["seed"] = value.Seed;
                 }
-                jObject.Add("values", JToken.FromObject(value.Values, serializer));
+                jObject.Add("values", JToken.FromObject(values, serializer));
             }
             if(value.BlendingValues.Count != 0)
             {

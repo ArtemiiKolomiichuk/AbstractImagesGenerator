@@ -48,6 +48,7 @@ namespace AbstractImagesGenerator.Misc
                 Title = Title,
                 Type = Type,
                 Seed = Seed,
+                Locked = Locked,
                 HideContent = HideContent,
                 Settings = [.. Settings.Select(x => x.Copy)],
                 InheritedSettings = [.. InheritedSettings.Select(x => x.Copy)]
@@ -84,6 +85,7 @@ namespace AbstractImagesGenerator.Misc
                 Title = Title,
                 Type = Type,
                 Seed = Seed,
+                Locked = Locked,
                 HideContent = HideContent,
                 Settings = [.. Settings.Select(x => x.Copy)],
                 InheritedSettings = [.. InheritedSettings.Select(x => x.Copy)],
