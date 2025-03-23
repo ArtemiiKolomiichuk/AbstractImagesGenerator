@@ -106,22 +106,23 @@
                                         modal.SetColor(list.Values[list.Values.IndexOf(item)]);
                                         modal.SetCanDelete(shrinkable);
                                         await modal.Configure(e);
+                                        int i = list.Values.IndexOf(item);
                                         modal.SetOnColorChanged((c) =>
                                         {
-                                                list.Values[list.Values.IndexOf(item)] = c;
-                                                Setting.Value = list;
-                                                StateHasChanged();
+                                            list.Values[i] = c;
+                                            Setting.Value = list;
+                                            StateHasChanged();
                                         });
                                         var (color, delete) = await modal.ShowAsync();
                                         if (delete)
                                         {
-                                            list.Values.RemoveAt(list.Values.IndexOf(item));
+                                            list.Values.RemoveAt(i);
                                             Setting.Value = list;
                                             Update();
                                         }
                                         else if (color != null)
                                         {
-                                            list.Values[list.Values.IndexOf(item)] = color;
+                                            list.Values[i] = color;
                                             Setting.Value = list;
                                             Update();
                                         }
