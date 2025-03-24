@@ -122,6 +122,9 @@ namespace AbstractImagesGenerator.Misc
                 return new StringListValue(array.ToObject<List<string>>());
             }
 
+            if(jToken.Type == JTokenType.String)
+                return new StringValue(jToken.ToObject<string>());
+
             throw new NotImplementedException();
         }
 
@@ -146,6 +149,9 @@ namespace AbstractImagesGenerator.Misc
                     break;
                 case FloatValue floatRecord:
                     serializer.Serialize(writer, floatRecord.Value);
+                    break;
+                case StringValue stringRecord:
+                    serializer.Serialize(writer, stringRecord.Value);
                     break;
                 default:
                     throw new NotImplementedException();

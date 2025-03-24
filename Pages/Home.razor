@@ -43,8 +43,9 @@
         {
             errorMessage = "Server is unavailable, try again later";
             #if DEBUG
-                errorMessage = "The server is not running (fetching layer options unavailable)\n\n";
-                errorMessage += e.Message;
+                errorMessage = "Fetching layer options failed\n\n";
+                errorMessage += e.Message + '\n';
+                errorMessage += e.StackTrace;
             #endif
             StateHasChanged();
         }
@@ -104,18 +105,20 @@
                     generating = false;
                     errorMessage = "An error occurred while generating your image";
                     #if DEBUG
-                        errorMessage = await response.Content.ReadAsStringAsync();
+                        errorMessage = "Failure on response (a)\n\n";
+                        errorMessage += await response.Content.ReadAsStringAsync();
                     #endif
                     StateHasChanged();
                 }
             }
-            catch
+            catch (Exception e)
             {
                 generating = false;
                 errorMessage = "Server is unavailable, try again later";
                 #if DEBUG
-                    errorMessage = "The server is not running\n\n";
-                    errorMessage += "Generating Image request not responded";
+                    errorMessage = "Exception on response (b)\n\n";
+                    errorMessage += e.Message + '\n';
+                    errorMessage += e.StackTrace;
                 #endif
                 StateHasChanged();
             }        
@@ -126,7 +129,8 @@
             errorMessage = "An error occurred while generating your image";
             #if DEBUG
                 errorMessage = "A problem with query\n\n";
-                errorMessage += e.Message;
+                errorMessage += e.Message + '\n';
+                errorMessage += e.StackTrace;
             #endif
             StateHasChanged();
         }
