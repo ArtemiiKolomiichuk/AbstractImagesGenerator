@@ -1,14 +1,27 @@
-﻿@if (IsVisible)
+﻿@using System.Text.RegularExpressions
+@if (IsVisible)
 {
     <div class="color-modal-overlay" @onclick="() => CloseModal(null)" @onclick:stopPropagation="false">
         <div class="color-modal-content" style="@($"left:{offset.x}px; top:{offset.y}px;")" @onclick:stopPropagation="true">
-            <ColorPicker SelectedColor="@color" SelectedColorChanged="(c) => {color = c; onColorChanged?.Invoke(c);}" />
-            @if (canDelete)
-            {
-                <span class="color-delete-block">
-                    <button class="bttn color-delete" @onclick="DeleteColor">Delete</button>
+            <ColorPicker @ref="ColorPicker" SelectedColor="@color" SelectedColorChanged="(c) => {color = c; onColorChanged?.Invoke(c);}" />
+            <div class="color-footer">
+                <span class="hex-container">
+                    #<input class="hex-input" type="text" value="@(color[1..])" @onchange="e => {
+                            string val = Hashtag + new string(e.Value!.ToString()!.Where(x => x != Hashtag).ToArray());
+                            if (IsValidHexColor(val))
+                            {
+                                color = val;
+                                ColorPicker.UpdateColor(val);
+                                onColorChanged?.Invoke(color);
+                            }}"/>
                 </span>
-            }
+                @if (canDelete)
+                {
+                    <span class="color-delete-block">
+                        <button class="bttn color-delete" @onclick="DeleteColor">Delete</button>
+                    </span>
+                }
+            </div>
         </div>
     </div>
 }
@@ -19,11 +32,15 @@
 
     private TaskCompletionSource<(string?, bool)>? _tcs;
 
+    private ColorPicker ColorPicker;
+
     private bool canDelete = false;
 
     private Action<string>? onColorChanged;
 
     private string color = "#FF0000";
+
+    private static char Hashtag = '#';
 
     private (double x, double y) offset;
 
@@ -76,6 +93,13 @@
         IsVisible = false;
         _tcs?.SetResult((color,false));
         StateHasChanged();
+    }
+
+    public static bool IsValidHexColor(string hexColor)
+    {
+        string pattern = @"^#(?:[0-9a-fA-F]{3}){1,2}$";
+        Regex regex = new Regex(pattern);
+        return regex.IsMatch(hexColor);
     }
 
     private void DeleteColor()

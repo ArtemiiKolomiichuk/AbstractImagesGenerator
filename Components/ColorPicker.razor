@@ -15,6 +15,13 @@
     [Parameter]
     public string SelectedColor { get; set; } = "#FF0000";
 
+    public void UpdateColor(string hex)
+    {
+        SelectedColor = hex;
+        (Hue, Saturation, Value) = HexToHSV(SelectedColor);
+        StateHasChanged();
+    }
+
     [Parameter]
     public EventCallback<string> SelectedColorChanged { get; set; }
 
