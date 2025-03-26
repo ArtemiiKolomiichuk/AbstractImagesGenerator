@@ -71,15 +71,15 @@
             break;
         case PropertyDisplayType.Dropdown:
             {
-                <Selector Class="selector" Options="@([..Setting.PossibleValues!.Keys.Skip(1)])" Title="@Setting.PossibleValues.First().Key"
-                OnSelect="(s) => {
-                    if(string.IsNullOrWhiteSpace(s))
+                string key = Setting.PossibleValues.FirstOrDefault(x => x.Value == Setting.Value).Key;
+                key ??= Setting.PossibleValues.First().Key;
+
+                <select class="selector" value="@key" @onchange="(x) => {Setting.Value = Setting.PossibleValues[x.Value.ToString()]; StateHasChanged();}">
+                    @foreach (var option in Setting.PossibleValues)
                     {
-                        Setting.Value = Setting.PossibleValues.First().Value;
-                        return;
+                        <option value="@option.Key">@option.Key</option>
                     }
-                    Setting.Value = Setting.PossibleValues[s];
-                }"/>
+                </select>
             }
             break;
         case PropertyDisplayType.Colors:
