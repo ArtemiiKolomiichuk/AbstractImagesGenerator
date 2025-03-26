@@ -6,37 +6,37 @@
 @Home.Header()
 <LayersModal @ref="LayersModal" />
 <ColorModal @ref="ColorModal" />
-
-<div class="generation-block" style="display: flex; justify-content: center; align-items: center;">
-    <div class="image-block" style="display:flex; flex-direction: column;">
-        <UpdatableImage ImageSrc="@imageSrc" Id="main-img" Loading="@generating" ErrorMessage="@errorMessage"/>
-        <div style="display:flex; margin: 0.5rem 0; align-items: center; justify-content: center;">
-            <Selector Options="@ResolutionOptions" Title="640x480" OnSelect="(s) => {resolution = s; StateHasChanged();}" Class="selector" />
-            <button class="bttn" @onclick="GenerateImage" disabled="@generating">Generate Image</button>
-            <div class="download-container">
-                <a class="download" title="Download" href="@imageSrc" download="image.png">
-                    <Ico Class="download-ico" Icon="@Icons.Download" Size="2.6" Color="#cccccc" />
-                </a>
-                <span class="share" @onclick="async() => {
-                        var id = await SaveQuery();
-                        if (id != null)
-                        {
-                            await JS.InvokeVoidAsync(saveToClipboardComm, id);
-                        }
-                    }">
-                    <Ico Class="share-ico" Icon="@Icons.Share" Size="2.6" Color="#cccccc" />
-                </span>
+<div id="generation-content">
+    <div class="generation-block" style="display: flex; justify-content: center; align-items: center;">
+        <div class="image-block" style="display:flex; flex-direction: column;">
+            <UpdatableImage ImageSrc="@imageSrc" Id="main-img" Loading="@generating" ErrorMessage="@errorMessage"/>
+            <div style="display:flex; margin: 0.5rem 0; align-items: center; justify-content: center;">
+                <Selector Options="@ResolutionOptions" Title="640x480" OnSelect="(s) => {resolution = s; StateHasChanged();}" Class="selector" />
+                <button class="bttn" @onclick="GenerateImage" disabled="@generating">Generate Image</button>
+                <div class="download-container">
+                    <a class="download" title="Download" href="@imageSrc" download="image.png">
+                        <Ico Class="download-ico" Icon="@Icons.Download" Size="2.6" Color="#cccccc" />
+                    </a>
+                    <span class="share" @onclick="async() => {
+                            var id = await SaveQuery();
+                            if (id != null)
+                            {
+                                await JS.InvokeVoidAsync(saveToClipboardComm, id);
+                            }
+                        }">
+                        <Ico Class="share-ico" Icon="@Icons.Share" Size="2.6" Color="#cccccc" />
+                    </span>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="layers-list" style="display:flex; flex-direction: column;">
-        @if (blending != null)
-        {
-            <LayerCard Layer="blending" Update="StateHasChanged" ParentList="null" />
-        }
+        <div class="layers-list" style="display:flex; flex-direction: column;">
+            @if (blending != null)
+            {
+                <LayerCard Layer="blending" Update="StateHasChanged" ParentList="null" />
+            }
+        </div>
     </div>
 </div>
-
 @inject IJSRuntime JS
 @inject NavigationManager NavManager
 @code{

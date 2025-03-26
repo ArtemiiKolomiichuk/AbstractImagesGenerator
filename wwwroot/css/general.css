@@ -20,6 +20,10 @@
     margin-bottom: -5px;
 }
 
+body{
+    margin: 0;
+}
+
 @media (orientation:landscape) {
     .generation-block{
         margin: 0 1rem;
@@ -29,13 +33,16 @@
         align-items: center;
     }
     body{
-        height:100%;
-        margin: 0;
+        height:95vh;
     }
-    #app {
+    #generation-content {
         display: flex;
         justify-content: center;
         align-items: center;
+        height: -webkit-fill-available;
+        height: -moz-available;
+    }
+    #app {
         height: -webkit-fill-available;
         height: -moz-available;
     }
@@ -58,10 +65,11 @@
         max-width: 90vw;
     }
 
-    #app {
+    #generation-content {
         display: flex;
         justify-content: center;
         align-items: center;
+        margin-top: 1rem;
     }
 }
 
