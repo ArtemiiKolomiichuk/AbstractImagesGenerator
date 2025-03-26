@@ -9,7 +9,7 @@ window.fitsToTheRight = (x, size) => {
 
 window.copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(function () {
-        alert("Copied to clipboard!");
+        alert("URL copied to clipboard!");
     })
     .catch(function (error) {
         alert(error);

@@ -90,7 +90,8 @@
 .color-delete-block {
     display: flex;
     flex-direction: row-reverse;
-    margin-top: 0.5rem;
+    height: fit-content;
+    margin-top: 3px;
 }
 
 .color-delete {
@@ -100,4 +101,22 @@
 
 .color-delete:hover {
     background-color: #c83434;
+}
+
+.color-footer {
+    display: flex;
+    justify-content: space-between;
+    width: 190px;
+    margin: 0.5rem 0.2rem 0.1rem 0.2rem;
+}
+
+.hex-container {
+    font-size: 1.3rem;
+}
+
+.hex-input {
+    width: 70px;
+    font-size: 1.1rem;
+    border: none;
+    text-decoration: underline;
 }
