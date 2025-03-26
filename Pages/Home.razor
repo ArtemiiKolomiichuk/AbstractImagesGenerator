@@ -17,28 +17,32 @@
         Generate
     </a>
 </div>
-<p style="margin: 1rem; font-size: 1.2rem;">
-    Unleash your creativity with our interactive wallpaper generator! 
-    Adjust parameters like color saturation, noise level, symmetry, and geometric intensity using intuitive sliders.
-    Choose from curated color palettes or generate your own, specify image dimensions, and export high-resolution PNG files.
-    Instantly share your creations and explore an inspiration mode for fresh ideas. 
-    Developers can integrate our powerful API for automated image generation. 
-    Start designing your perfect wallpaper today!
-</p>
+<div id="home-info">
+    <p style="margin: 1rem; font-size: 1.2rem;">
+        Unleash your creativity with our interactive wallpaper generator!
+        Adjust parameters like color saturation, noise level, symmetry, and geometric intensity using intuitive sliders.
+        Choose from curated color palettes or generate your own, specify image dimensions, and export high-resolution PNG files.
+        Instantly share your creations and explore an inspiration mode for fresh ideas.
+        Developers can integrate our powerful API for automated image generation.
+        Start designing your perfect wallpaper today!
+    </p>
 
-<div id="gallery">
-    <h1>Gallery</h1>
-    <div id="gallery-items">
-        @foreach (var (id, image) in gallery)
-        {
-            <div>
-                <img style="cursor:pointer;" @onclick="() => {
-                    NavigationManager.NavigateTo(uri + id);
-                }" src="@image" />
+    <div id="gallery">
+        <span style="font-size:3rem; font-weight: 400; margin-bottom: 0.5rem;">Gallery</span>
+        <div id="gallery-items">
+            @foreach (var (id, image) in gallery)
+            {
+                <div>
+                    <img style="cursor:pointer;" @onclick="() => {
+                        NavigationManager.NavigateTo(uri + id);
+                }
+                " src="@image" />
             </div>
-        }
+                        }
+        </div>
     </div>
 </div>
+
 
 @using Newtonsoft.Json;
 @inject NavigationManager NavigationManager
@@ -69,7 +73,7 @@
     internal static RenderFragment Header()
     {
         return@<div id="header">
-            <Ico Icon="@Icons.ArrowDownRight" />
+            <Ico Icon="@Icons.Wallpaper" Color="#c6be1b" Size="3"/>
             <a href="/">Home</a>
             <a href="/gen">Generate</a>
         </div>;
