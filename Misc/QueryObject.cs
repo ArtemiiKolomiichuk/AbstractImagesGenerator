@@ -20,9 +20,6 @@ namespace AbstractImagesGenerator.Misc
         [JsonProperty("height")]
         public int Height { get; set; }
 
-        [JsonProperty("seed")]
-        public long? Seed { get; set; } = null;
-
         [JsonProperty("layer_query")]
         public BlendingQuery FinalBlending { get; set; } 
 
@@ -86,7 +83,7 @@ namespace AbstractImagesGenerator.Misc
                 return blending;
             }
 
-            return (DeconstructBlending(defaultBlendings, defaulltDrawings, null, queryObject.Seed ?? -1, queryObject.FinalBlending), queryObject.Width, queryObject.Height);
+            return (DeconstructBlending(defaultBlendings, defaulltDrawings, null, -1, queryObject.FinalBlending), queryObject.Width, queryObject.Height);
         }
     }
 

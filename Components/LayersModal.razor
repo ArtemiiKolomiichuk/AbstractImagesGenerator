@@ -25,10 +25,12 @@
             else
             {
                 <h3>Blendings</h3>
-                @foreach (var layer in Blendings)
-                {
-                    <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
-                }
+                <div style="display: flex; flex-direction: column;">
+                    @foreach (var layer in Blendings)
+                    {
+                        <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
+                    }
+                </div>
             }
             <button class="modal-close-button" @onclick="() => CloseModal(null)">Close</button>
         </div>

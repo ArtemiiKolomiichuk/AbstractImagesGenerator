@@ -167,7 +167,8 @@
                     {
                         var json = reader.ReadToEnd();
                         var blending = (await QueryObject.Deconstruct(json)).Value.Item1;
-                        Generation.blending.Seed = blending.Seed;
+                        if(blending.Seed != null)
+                            Generation.blending.Seed = blending.Seed;
                         SetSeeds(Generation.blending.SubLayers, blending.SubLayers);
                         StateHasChanged();
                     }
@@ -217,7 +218,8 @@
     {
         for (int i = 0; i < layers.Count; i++)
         {
-            layers[i].Seed = newLayers[i].Seed;
+            if (newLayers[i].Seed != null)
+                layers[i].Seed = newLayers[i].Seed;
             if(layers[i] is Blending blendingTo && blendingTo.SubLayers != null && newLayers[i] is Blending blendingFrom)
             {
                 SetSeeds(blendingTo.SubLayers, blendingFrom.SubLayers);

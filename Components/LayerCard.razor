@@ -106,9 +106,12 @@
                 <!--CHANGE BLENDING TYPE-->
                 <span @onclick="async () => { 
                         var blending = await ModalController.ShowAsync(true);
-                        if(blending == null || blending.Type == _blending.Type)
+                        if(blending == null || blending.Type == _blending.Type || blending is not Blending)
                             return;
-                        //TODO: Implement blending type change
+                         var bl = blending as Blending;
+                         bl.SubLayers = [..AbstractImagesGenerator.Pages.Generation.blending.SubLayers.Select(x => x.Copy)];
+                         AbstractImagesGenerator.Pages.Generation.blending = bl;
+                         bl.SubLayers.ForEach(x => x.UpdateInheritedSettings(bl.HereditarySettings));
                         Update();
                     }" title="Change Type">
                     <Ico Class="icon-button violet" Icon="@Icons.Customize" Size="2" Color="#7160e8" />
