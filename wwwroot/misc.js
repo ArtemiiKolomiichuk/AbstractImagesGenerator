@@ -6,3 +6,12 @@
 window.fitsToTheRight = (x, size) => {
     return x + size < window.innerWidth;
 }
+
+window.copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(function () {
+        alert("Copied to clipboard!");
+    })
+    .catch(function (error) {
+        alert(error);
+    });
+};
