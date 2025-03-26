@@ -91,62 +91,61 @@
                 }
                 bool shrinkable = list.Values.Count > (Setting.MinCount ?? 0);
                 bool expendable = list.Values.Count < Setting.MaxCount;
-                <div style="display: flex;
-                            align-items: center;
-                            flex-wrap: wrap;">
-                    <SortableList Handle=".drag-handle" Items="list.Values"
-                    OnUpdate="(x) => { SortList(x); StateHasChanged(); }" 
-                    Context="item">
-                        <SortableItemTemplate>
-                            <div class="color-input-block">
-                                <div class="color-value"
-                                style="@($"background-color: {list.Values[list.Values.IndexOf(item)]?.ToString() ?? "black"};")"
-                                @onclick="async (e) => {
-                                        var modal = AbstractImagesGenerator.Pages.Home.ColorModal;
-                                        modal.SetColor(list.Values[list.Values.IndexOf(item)]);
-                                        modal.SetCanDelete(shrinkable);
-                                        await modal.Configure(e);
-                                        int i = list.Values.IndexOf(item);
-                                        modal.SetOnColorChanged((c) =>
-                                        {
-                                            list.Values[i] = c;
-                                            Setting.Value = list;
-                                            StateHasChanged();
-                                        });
-                                        var (color, delete) = await modal.ShowAsync();
-                                        if (delete)
-                                        {
-                                            list.Values.RemoveAt(i);
-                                            Setting.Value = list;
-                                            Update();
-                                        }
-                                        else if (color != null)
-                                        {
-                                            list.Values[i] = color;
-                                            Setting.Value = list;
-                                            Update();
-                                        }
-                                     }
-                                "/>
-                                @if(list.Values.Count > 1)
-                                {
-                                    <div class="drag-handle" style="cursor: grab; -webkit-user-select: none; display: flex; justify-content: center;margin-top: -3px;">
-                                        @((MarkupString)Icons.DragBottom)
-                                    </div>
-                                }
-                            </div>
-                        </SortableItemTemplate>
-                    </SortableList>
-                    @if (expendable)
-                    {
-                        <span @onclick="() => { list.Values.Add(RandomColor()); Setting.Value = list; Update(); }" style="height: 2rem;-webkit-user-select: none;"  title="Add Color">
-                            <Ico Class="icon-button pink" Icon="@Icons.Add" Size="2" />
+                <SortableList Class="color-row" Handle=".drag-handle" Items="list.Values"
+                OnUpdate="(x) => { SortList(x); StateHasChanged(); }" 
+                Context="item">
+                    <SortableItemTemplate>
+                        <div class="color-input-block">
+                            <div class="color-value"
+                            style="@($"background-color: {list.Values[list.Values.IndexOf(item)]?.ToString() ?? "black"};")"
+                            @onclick="async (e) => {
+                                    var modal = AbstractImagesGenerator.Pages.Home.ColorModal;
+                                    modal.SetColor(list.Values[list.Values.IndexOf(item)]);
+                                    modal.SetCanDelete(shrinkable);
+                                    await modal.Configure(e);
+                                    int i = list.Values.IndexOf(item);
+                                    modal.SetOnColorChanged((c) =>
+                                    {
+                                        list.Values[i] = c;
+                                        Setting.Value = list;
+                                        StateHasChanged();
+                                    });
+                                    var (color, delete) = await modal.ShowAsync();
+                                    if (delete)
+                                    {
+                                        list.Values.RemoveAt(i);
+                                        Setting.Value = list;
+                                        Update();
+                                    }
+                                    else if (color != null)
+                                    {
+                                        list.Values[i] = color;
+                                        Setting.Value = list;
+                                        Update();
+                                    }
+                                    }
+                            "/>
+                            @if(list.Values.Count > 1)
+                            {
+                                <div class="drag-handle" style="cursor: grab; -webkit-user-select: none; display: flex; justify-content: center;margin-top: -3px;">
+                                    @((MarkupString)Icons.DragBottom)
+                                </div>
+                            }
+                        </div>
+                    </SortableItemTemplate>
+                    <Footer>
+                        @if (expendable)
+                        {
+                            <span @onclick="() => { list.Values.Add(RandomColor()); Setting.Value = list; Update(); }" style="height: 2rem;-webkit-user-select: none;" title="Add Color">
+                                <Ico Class="icon-button pink" Icon="@Icons.Add" Size="2" />
+                            </span>
+                        }
+                        <span @onclick="() => Setting.Value = RandomPalette(list.Values.Count).ToList()" style="height: 2rem;-webkit-user-select: none;" title="Randomize Colors">
+                            <Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
                         </span>
-                    }
-                    <span @onclick="() => Setting.Value = RandomPalette(list.Values.Count).ToList()" style="height: 2rem;-webkit-user-select: none;" title="Randomize Colors">
-                        <Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
-                    </span>
-                </div>
+                    </Footer>
+                </SortableList>
+                
             }
             break;
     }

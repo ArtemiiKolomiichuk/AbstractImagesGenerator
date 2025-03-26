@@ -15,14 +15,32 @@
 }
 
 #main-img {
-    width: 30vw;
+    max-width: 45vw;
     height: auto;
     margin-bottom: -5px;
 }
 
 @media (orientation:landscape) {
+    .generation-block{
+        margin: 0 1rem;
+    }
     .image-block {
         margin-right: 2rem;
+        align-items: center;
+    }
+    body{
+        height:100%;
+        margin: 0;
+    }
+    #app {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: -webkit-fill-available;
+        height: -moz-available;
+    }
+    html {
+        height: 100%;
     }
 }
 
@@ -32,33 +50,59 @@
     }
 
     .layers-list {
-        width: 70%;
+        width: 90vw;
         max-height: 50vh;
     }
 
     #main-img {
-        width: 70vw !important
+        width: 90vw !important;
+        max-width: 90vw;
+    }
+
+    #app {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }
 
 
 .download {
-    position: absolute;
-    right: 0.8rem;
-    bottom: 0.4rem;
+    margin: 0 0.6rem 0 1rem;
 }
 
 .download-ico {
     background-color: #e5e5e540;
-    transition: background-color 0.4s;
     transition: fill 0.4s;
     border-radius: 0.6rem;
+    transition: background-color 0.3s;
 }
 
     .download-ico:hover {
         background-color: #dfdfdf90;
+        transition: fill 0.3s;
         fill: #ffffff;
         cursor: pointer;
+        transition: background-color 0.6s;
+    }
+
+.share{
+
+}
+
+.share-ico {
+    background-color: #e5e5e540;
+    transition: fill 0.4s;
+    border-radius: 0.6rem;
+    transition: background-color 0.3s;
+}
+
+    .share-ico:hover {
+        background-color: #dfdfdf90;
+        transition: fill 0.3s;
+        fill: #ffffff;
+        cursor: pointer;
+        transition: background-color 0.6s;
     }
 
 button {

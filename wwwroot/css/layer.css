@@ -8,7 +8,7 @@
 }
 
     .inner-list.first {
-        max-height: 60vh;
+        height: 60vh;
     }
 
     .inner-list::-webkit-scrollbar {

@@ -16,3 +16,9 @@
 .inherited {
     color: #858585ff;
 }
+
+.color-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
