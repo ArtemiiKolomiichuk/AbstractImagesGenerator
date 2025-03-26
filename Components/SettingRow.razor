@@ -99,7 +99,7 @@
                             <div class="color-value"
                             style="@($"background-color: {list.Values[list.Values.IndexOf(item)]?.ToString() ?? "black"};")"
                             @onclick="async (e) => {
-                                    var modal = AbstractImagesGenerator.Pages.Home.ColorModal;
+                                    var modal = AbstractImagesGenerator.Pages.Generation.ColorModal;
                                     modal.SetColor(list.Values[list.Values.IndexOf(item)]);
                                     modal.SetCanDelete(shrinkable);
                                     await modal.Configure(e);

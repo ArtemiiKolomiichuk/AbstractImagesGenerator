@@ -69,6 +69,10 @@ namespace AbstractImagesGenerator.Misc
                 {
                     blending.Seed = Seed;
                 }
+                else if (blendingQuery.Seed > 0)
+                {
+                    blending.Seed = blendingQuery.Seed;
+                }
                 blending.SubLayers = [];
                 foreach (var layer in blendingQuery.SubLayers)
                 {

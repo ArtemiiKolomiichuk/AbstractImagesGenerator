@@ -6,7 +6,19 @@
     <NotFound>
         <PageTitle>Not found</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <div style="display: flex;
+                      flex-direction: column;
+                      align-items: center;" role="alert">
+                Sorry, there's nothing at this address.
+                <div style="display:flex;
+                            justify-content: space-evenly;
+                            width: -webkit-fill-available;
+                            width: -moz-available;">
+                    <a href="/">Home</a>
+                    <a href="/gen">Generate</a>
+                </div>
+            </div>
+            
         </LayoutView>
     </NotFound>
 </Router>

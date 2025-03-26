@@ -5,7 +5,7 @@ namespace AbstractImagesGenerator.Misc
 {
     public static class LayerListsController
     {
-        private static readonly Blending blending = Home.blending;
+        private static readonly Blending blending = Generation.blending;
 
         public static void Move((int oldIndex, int newIndex, string toId, string fromId) indices)
         {

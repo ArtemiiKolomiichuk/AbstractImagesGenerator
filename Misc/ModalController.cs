@@ -5,7 +5,7 @@ namespace AbstractImagesGenerator.Misc
 {
     public static class ModalController
     {
-        private static LayersModal Modal => Home.Modal;
+        private static LayersModal Modal => Generation.LayersModal;
 
         public static async Task<Layer?> ShowAsync(bool onlyBlendings)
         {
