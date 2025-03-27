@@ -1,4 +1,4 @@
-﻿<div class="@(!IsFinalBlending && Layer is Blending ? "layer-card blending" : "layer-card")" style="@(IsFinalBlending ? "padding: 0.5rem; padding-top: 0.3rem; background-color: #f7f7fb; min-width:40vw" : "")">
+﻿<div class="@(IsFinalBlending ? "layer-card final-blending" : (Layer is Blending ? "layer-card blending" : "layer-card"))">
     <div class="card-header">
         <div style="display: flex; align-items: center;">
             @if (!IsFinalBlending)

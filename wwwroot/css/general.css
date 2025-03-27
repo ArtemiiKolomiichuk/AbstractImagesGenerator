@@ -127,3 +127,11 @@ button {
         background-color: #dfdfdf;
     }
 
+.final-blending {
+    padding: 0.5rem;
+    padding-top: 0.3rem;
+    background-color: #f7f7fb !important;
+    min-width: 40vw;
+    max-height: 80vh;
+    overflow: auto;
+}

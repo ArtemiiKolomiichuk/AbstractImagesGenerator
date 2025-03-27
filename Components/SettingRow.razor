@@ -8,37 +8,37 @@
         case PropertyDisplayType.Slider:
             {
                 <input type="range" min="@(Setting.MinValue ?? 0)" max="@(Setting.MaxValue ?? 0)" 
-                step="@(Setting.DataType == PropertyValueType.Float ? 0.01 : 1)" 
+                step="@(Setting.DataType == PropertyValueType.Float ? ((Number)0.01).ToString() : 1)" 
                 value="@(Setting.Value switch {
-                        FloatValue floatValue => floatValue.Value,
+                        FloatValue floatValue => (Number)floatValue.Value,
                         IntValue intValue => intValue.Value
                     })"
                 @onchange ="(e) => 
-                       { 
-                            double val = double.Parse(e.Value.ToString());
-                            Setting.Value = Setting.DataType switch
-                            {
-                                PropertyValueType.Float => new FloatValue(val),
-                                PropertyValueType.Int => (int)val,
-                                _ => throw new NotImplementedException()
-                            };
-                            StateHasChanged();
-                            Update(); 
-                       }"
+                    { 
+                        double val = (double)(new Number(e.Value.ToString()));
+                        Setting.Value = Setting.DataType switch
+                        {
+                            PropertyValueType.Float => new FloatValue(val),
+                            PropertyValueType.Int => (int)val,
+                            _ => throw new NotImplementedException()
+                        };
+                        StateHasChanged();
+                        Update(); 
+                    }"
                 style="margin: 0.4rem; width: 6rem;" />
             }
             break;
         case PropertyDisplayType.RangeSlider:
             {
-                <RangeSlider Min="@(Convert.ToDouble(Setting.MinValue ?? 0))" Max="@(Convert.ToDouble(Setting.MaxValue ?? 0))" 
-                Step="@(Setting.DataType == PropertyValueType.FloatTuple ? 0.01 : 1)"
+                <RangeSlider Min="@((Number)Convert.ToDouble(Setting.MinValue ?? 0))" Max="@((Number)Convert.ToDouble(Setting.MaxValue ?? 0))"
+                Step="@(Setting.DataType == PropertyValueType.FloatTuple ? (Number)0.01 : new Number(1))"
                 MaxValue="Setting.Value switch{
-                    FloatTupleValue floatTupleValue => floatTupleValue.Values.Item2,
-                    IntTupleValue intTupleValue => intTupleValue.Values.Item2
+                    FloatTupleValue floatTupleValue => (Number)floatTupleValue.Values.Item2,
+                    IntTupleValue intTupleValue => (Number)intTupleValue.Values.Item2
                 }"
                 MinValue="Setting.Value switch{
-                    FloatTupleValue floatTupleValue => floatTupleValue.Values.Item1,
-                    IntTupleValue intTupleValue => intTupleValue.Values.Item1
+                    FloatTupleValue floatTupleValue => (Number)floatTupleValue.Values.Item1,
+                    IntTupleValue intTupleValue => (Number)intTupleValue.Values.Item1
                 }"
                 OnChange="(r) => {
                     (double, double) val = Setting.Value switch
@@ -47,14 +47,14 @@
                         IntTupleValue intTupleValue => (intTupleValue.Values.Item1, intTupleValue.Values.Item2)
                     };
 
-                    if(r.Item1 == val.Item1 && r.Item2 == val.Item2)
+                    if(r.Item1.Value == val.Item1 && r.Item2.Value == val.Item2)
                     {
                         return;
                     }
 
                     Setting.Value = Setting.DataType switch
                     {
-                        PropertyValueType.FloatTuple => (r.Item1, r.Item2), 
+                        PropertyValueType.FloatTuple => (r.Item1.Value, r.Item2.Value), 
                         PropertyValueType.IntTuple => ((int)r.Item1, (int)r.Item2),
                         _ => throw new NotImplementedException()
                     };

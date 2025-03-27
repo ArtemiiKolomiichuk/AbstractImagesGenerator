@@ -1,21 +1,21 @@
-﻿@typeparam T where T : IComparable
-
-<div class="range-slider">
-    <span class="value-label min-label" style="@($"left: calc({MinValuePercentage}% + {(MinValuePercentage/100 * -34 + 6)}px)")">@MinValue</span>
-    <span class="value-label max-label" style="@($"left: calc({MaxValuePercentage}% + {(MaxValuePercentage/100 * -34 + 6)}px)")">@MaxValue</span>
+﻿<div class="range-slider">
+    <span class="value-label min-label" style="@($"left: calc({MinValuePercentage}% + {(Number)(MinValuePercentage.Value / 100 * -34 + 6)}px)")">@MinValue</span>
+    <span class="value-label max-label" style="@($"left: calc({MaxValuePercentage}% + {(Number)(MaxValuePercentage.Value / 100 * -34 + 6)}px)")">@MaxValue</span>
 
     <input type="range"
-        min="@Min"
-        max="@Max"
-        step="@Step"
-        @bind-value="@MinValue"
-        class="slider min-slider" />
+           min="@Min.ToString()"
+           max="@Max.ToString()"
+           step="@Step.ToString()"
+           value="@MinValue.ToString()"
+           @onchange="e => MinValue = new (e.Value.ToString())"
+          class="slider min-slider" />
 
     <input type="range"
-        min="@Min"
-        max="@Max"
-        step="@Step"
-        @bind-value="@MaxValue"
+        min="@Min.ToString()"
+        max="@Max.ToString()"
+        step="@Step.ToString()"
+        value="@MaxValue.ToString()"
+        @onchange="e => MaxValue = new(e.Value.ToString())"
         class="slider max-slider" />
 
     <div class="slider-track"></div>
@@ -23,18 +23,18 @@
 
 @code {
     [Parameter]
-    public T Step { get; set; }
+    public Number Step { get; set; }
 
     [Parameter]
-    public T Max { get; set; }
+    public Number Max { get; set; }
 
     [Parameter]
-    public T Min { get; set; }
+    public Number Min { get; set; }
 
-    private T _minValue;
+    private Number _minValue;
 
     [Parameter]
-    public T MinValue
+    public Number MinValue
     {
         get => _minValue;
         set
@@ -53,10 +53,10 @@
         }
     }
 
-    private T _maxValue;
+    private Number _maxValue;
 
     [Parameter]
-    public T MaxValue
+    public Number MaxValue
     {
         get => _maxValue;
         set
@@ -76,11 +76,11 @@
     }
 
     [Parameter]
-    public Action<(T, T)>? OnChange { get; set; }
+    public Action<(Number, Number)>? OnChange { get; set; }
 
-    public double MinValuePercentage => (Convert.ToDouble(MinValue) - Convert.ToDouble(Min)) / (Convert.ToDouble(Max) - Convert.ToDouble(Min)) * 100;
+    public Number MinValuePercentage => (MinValue.Value - Min.Value) / (Max.Value - Min.Value) * 100;
 
-    public double MaxValuePercentage => (Convert.ToDouble(MaxValue) - Convert.ToDouble(Min)) / (Convert.ToDouble(Max) - Convert.ToDouble(Min)) * 100;
+    public Number MaxValuePercentage => (MaxValue.Value - Min.Value) / (Max.Value - Min.Value) * 100;
 
     protected override async Task OnParametersSetAsync()
     {
