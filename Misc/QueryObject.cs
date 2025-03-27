@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AbstractImagesGenerator.Misc
@@ -23,12 +24,12 @@ namespace AbstractImagesGenerator.Misc
         [JsonProperty("layer_query")]
         public BlendingQuery FinalBlending { get; set; } 
 
-        public static async Task<(Blending, int, int)?> Deconstruct(string query)
+        public static async Task<(Blending, int, int)?> Deconstruct(NavigationManager NavManager, string query)
         {
             var queryObject = JsonConvert.DeserializeObject<QueryObject>(query);
             if (queryObject == null || queryObject.FinalBlending == null) return null;
-            var defaulltDrawings = await Drawing.GetLayerOptions();
-            var defaultBlendings = await Blending.GetLayerOptions();
+            var defaulltDrawings = await Drawing.GetLayerOptions(NavManager);
+            var defaultBlendings = await Blending.GetLayerOptions(NavManager);
 
             Drawing DeconstructDrawing(Drawing[] defaultDrawings, Blending parentBlending, DrawingQuery drawingQuery)
             {

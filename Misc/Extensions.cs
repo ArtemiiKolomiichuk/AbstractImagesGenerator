@@ -1,6 +1,6 @@
 ﻿namespace AbstractImagesGenerator.Misc
 {
-    public static class Streams
+    public static class Extensions
     {
         public static byte[] ReadFully(this Stream input)
         {

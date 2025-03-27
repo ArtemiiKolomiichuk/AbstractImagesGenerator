@@ -36,9 +36,9 @@
                     <img style="cursor:pointer;" @onclick="() => {
                         NavigationManager.NavigateTo(uri + id);
                 }
-                " src="@image" />
-            </div>
-                        }
+    " src="@image" />
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -53,7 +53,10 @@
     protected override async Task OnInitializedAsync()
     {
         var client = new HttpClient();
-        var response = await client.GetAsync(Program.BaseApiUrl + "/template-query/all?include_metadata=true&include_image=true&full_metadata=false");
+        var uri = Program.BaseApiUrl(NavigationManager);
+        Console.WriteLine(uri);
+        uri += "/template-query/all?include_metadata=true&include_image=true&full_metadata=false";
+        var response = await client.GetAsync(uri);
         if (response.IsSuccessStatusCode)
         {
             var parser = HttpMultipartParser.MultipartFormDataParser.Parse(await response.Content.ReadAsStreamAsync());

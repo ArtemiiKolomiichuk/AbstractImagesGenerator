@@ -93,7 +93,7 @@
             {
                 <!--ADD LAYER-->
                 <span @onclick="async () => {  
-                        var layer = await ModalController.ShowAsync(false);
+                        var layer = await ModalController.ShowAsync(NavManager, false);
                         if(layer == null)
                             return;
                         layer.UpdateInheritedSettings(_blending.HereditarySettings);
@@ -105,7 +105,7 @@
                 </span>
                 <!--CHANGE BLENDING TYPE-->
                 <span @onclick="async () => { 
-                        var blending = await ModalController.ShowAsync(true);
+                        var blending = await ModalController.ShowAsync(NavManager, true);
                         if(blending == null || blending.Type == _blending.Type || blending is not Blending)
                             return;
                          var bl = blending as Blending;
@@ -123,7 +123,7 @@
                 {
                     <!--ADD LAYER-->
                     <span @onclick="async () => {  
-                            var layer = await ModalController.ShowAsync(false);
+                            var layer = await ModalController.ShowAsync(NavManager, false);
                             if(layer == null)
                                 return;
                             layer.UpdateInheritedSettings(__blending.HereditarySettings);
@@ -177,6 +177,7 @@
 </div>
 
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavManager
 @code {
     [Parameter]
     public Layer Layer { get; set; }
@@ -237,8 +238,8 @@
     {
         return Layer switch
         {
-            Blending b => (await Blending.GetLayerOptions()).First(l => l.Type == b.Type).Title,
-            Drawing d => (await Drawing.GetLayerOptions()).First(l => l.Type == d.Type).Title,
+            Blending b => (await Blending.GetLayerOptions(NavManager)).First(l => l.Type == b.Type).Title,
+            Drawing d => (await Drawing.GetLayerOptions(NavManager)).First(l => l.Type == d.Type).Title,
             _ => throw new NotImplementedException()
         };    
     }

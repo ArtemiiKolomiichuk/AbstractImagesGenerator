@@ -1,5 +1,6 @@
 ﻿using AbstractImagesGenerator.Components;
 using AbstractImagesGenerator.Pages;
+using Microsoft.AspNetCore.Components;
 
 namespace AbstractImagesGenerator.Misc
 {
@@ -7,9 +8,9 @@ namespace AbstractImagesGenerator.Misc
     {
         private static LayersModal Modal => Generation.LayersModal;
 
-        public static async Task<Layer?> ShowAsync(bool onlyBlendings)
+        public static async Task<Layer?> ShowAsync(NavigationManager NavManager, bool onlyBlendings)
         {
-            Modal.SetLayers(await Blending.GetLayerOptions(), (onlyBlendings ? [] : await Drawing.GetLayerOptions()));
+            Modal.SetLayers(await Blending.GetLayerOptions(NavManager), (onlyBlendings ? [] : await Drawing.GetLayerOptions(NavManager)));
             return await Modal.ShowAsync();
         }
     }

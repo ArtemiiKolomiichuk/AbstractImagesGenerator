@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 #pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
@@ -57,11 +58,11 @@ namespace AbstractImagesGenerator.Misc
 
         internal static Drawing[] LayerOptions { get; set; }
 
-        public static async Task<Drawing[]> GetLayerOptions()
+        public static async Task<Drawing[]> GetLayerOptions(NavigationManager NavManager)
         {
             if (LayerOptions == null)
             {
-                string json = await new HttpClient().GetStringAsync($"{Program.BaseApiUrl}/image-generator/model");
+                string json = await new HttpClient().GetStringAsync($"{Program.BaseApiUrl(NavManager)}/image-generator/model");
                 var layers = JsonConvert.DeserializeObject<LayersModel>(json);
                 LayerOptions = layers.Drawings;
                 Blending.LayerOptions = layers.Blendings;
@@ -96,11 +97,11 @@ namespace AbstractImagesGenerator.Misc
 
         internal static Blending[] LayerOptions { get; set; }
 
-        public static async Task<Blending[]> GetLayerOptions()
+        public static async Task<Blending[]> GetLayerOptions(NavigationManager NavManager)
         {
             if(LayerOptions == null)
             {
-                string json = await new HttpClient().GetStringAsync($"{Program.BaseApiUrl}/image-generator/model");
+                string json = await new HttpClient().GetStringAsync($"{Program.BaseApiUrl(NavManager)}/image-generator/model");
                 var layers = JsonConvert.DeserializeObject<LayersModel>(json);
                 LayerOptions = layers.Blendings;
                 Drawing.LayerOptions = layers.Drawings;
