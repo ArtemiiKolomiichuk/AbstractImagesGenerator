@@ -37,6 +37,7 @@
         </div>
     </div>
 </div>
+
 @inject IJSRuntime JS
 @inject NavigationManager NavManager
 @code{
@@ -126,6 +127,7 @@
             #endif
             StateHasChanged();
         }
+        await JS.InvokeVoidAsync("startTour");
     }
 
     private async void GenerateImage()

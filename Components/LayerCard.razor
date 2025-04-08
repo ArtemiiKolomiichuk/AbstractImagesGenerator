@@ -95,7 +95,7 @@
             @if (IsFinalBlending && Layer is Blending _blending)
             {
                 <!--ADD LAYER-->
-                <span @onclick="async () => {  
+                <span id="final-blending-add-layer" @onclick="async () => {  
                         var layer = await ModalController.ShowAsync(NavManager, false);
                         if(layer == null)
                             return;
@@ -107,12 +107,12 @@
                     <Ico Class="icon-button violet" Icon="@Icons.ListAdd" Size="2" Color="#7160e8" />
                 </span>
                 <!--CHANGE BLENDING TYPE-->
-                <span @onclick="async () => { 
+                <span id="final-blending-change-type" @onclick="async () => { 
                         var blending = await ModalController.ShowAsync(NavManager, true);
                         if(blending == null || blending.Type == _blending.Type || blending is not Blending)
                             return;
                          var bl = blending as Blending;
-                         bl.SubLayers = [..AbstractImagesGenerator.Pages.Generation.blending.SubLayers.Select(x => x.Copy)];
+                         bl!.SubLayers = [..AbstractImagesGenerator.Pages.Generation.blending.SubLayers.Select(x => x.Copy)];
                          AbstractImagesGenerator.Pages.Generation.blending = bl;
                          bl.SubLayers.ForEach(x => x.UpdateInheritedSettings(bl.HereditarySettings));
                         Update();
