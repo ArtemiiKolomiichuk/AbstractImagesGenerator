@@ -15,9 +15,15 @@
             <div style="display:flex; flex-direction: column; margin-top: -5px;">
                 @if (!editingTitle)
                 {
-                    <div style="display: flex; align-items:center;height: 1.4rem; margin-top: 3px;" @onclick="EditTitle">
-                        @Layer.Title
-                        <Ico Class="icon-button" Icon="@Icons.Edit" Size="1.4" Color="#757575" />
+                    <div style="display: flex; align-items: baseline;">
+                        @if(Layer.Title == LayerType)
+                        {
+                            <Tooltip Text="@Layer.Description" />
+                        }
+                        <div style="display: flex; align-items:center;height: 1.4rem; margin-top: 3px;" @onclick="EditTitle">
+                            @Layer.Title
+                            <Ico Class="icon-button" Icon="@Icons.Edit" Size="1.4" Color="#757575" />
+                        </div>
                     </div>
                 }
                 else
@@ -30,7 +36,7 @@
                 {
                     <div style="margin-top: -5px; color:#545454">
                         <i>
-                            @LayerType
+                            <Tooltip Text="@Layer.Description">@LayerType</Tooltip>
                         </i>
                     </div>
                 }
@@ -148,7 +154,7 @@
             }
         </div>
     </div>
-    <!-- -->
+    <!-- SETTINGS -->
     @if(!Layer.HideContent && (Layer.Settings.Count > 0 || Layer.InheritedSettings.Count > 0))
     {
         <div class="@(IsFinalBlending ? "blend-settings" : "settings")">

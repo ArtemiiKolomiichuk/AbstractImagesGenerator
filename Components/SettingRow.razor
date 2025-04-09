@@ -1,7 +1,7 @@
 ﻿
 <div class="setting-row">
     <div class="@(Inherited ? "setting-row-title inherited" : "setting-row-title")" style="padding-right:1em">
-        @Setting.Title
+        <Tooltip Text="@Setting.Description">@Setting.Title</Tooltip>
     </div>
     @switch (Setting.VisibleType)
     {

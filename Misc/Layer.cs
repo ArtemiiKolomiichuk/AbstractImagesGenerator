@@ -15,6 +15,8 @@ namespace AbstractImagesGenerator.Misc
         [JsonProperty("name")]
         public string Type { get; set; }
 
+        [JsonProperty("description")]
+        public string Description { get; set; }
         [JsonProperty("parameters")]
         public List<LayerSetting> Settings { get; set; } = [];
         public List<LayerSetting> InheritedSettings { get; set; } = [];
@@ -49,6 +51,7 @@ namespace AbstractImagesGenerator.Misc
                 Title = Title,
                 Type = Type,
                 Seed = Seed,
+                Description = Description,
                 Locked = Locked,
                 HideContent = HideContent,
                 Settings = [.. Settings.Select(x => x.Copy)],
@@ -86,6 +89,7 @@ namespace AbstractImagesGenerator.Misc
                 Title = Title,
                 Type = Type,
                 Seed = Seed,
+                Description = Description,
                 Locked = Locked,
                 HideContent = HideContent,
                 Settings = [.. Settings.Select(x => x.Copy)],
@@ -121,6 +125,8 @@ namespace AbstractImagesGenerator.Misc
         public PropertyValueType DataType { get; set; }
         [JsonProperty("visible_type")]
         public PropertyDisplayType VisibleType { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
         [JsonProperty("default")]
         public SettingValue? Value { get; set; }
         [JsonProperty("min_value")]
@@ -147,6 +153,7 @@ namespace AbstractImagesGenerator.Misc
                     Title = Title,
                     Type = Type,
                     DataType = DataType,
+                    Description = Description,
                     VisibleType = VisibleType,
                     Value = Value switch
                     {
