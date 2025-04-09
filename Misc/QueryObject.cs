@@ -191,7 +191,10 @@ namespace AbstractImagesGenerator.Misc
             }
             else
             {
-                layerQuery = new BlendingQuery();
+                layerQuery = new BlendingQuery()
+                {
+                    SubLayers = jObject["layers"]?.ToObject<List<LayerQuery>>(serializer) ?? []
+                };
             }
             layerQuery.Type = jObject["name"].Value<string>();
             layerQuery.LayerType = layerType;
@@ -202,11 +205,6 @@ namespace AbstractImagesGenerator.Misc
                 layerQuery.Values.Remove("seed");
             }
             layerQuery.BlendingValues = jObject["blending_values"]?.ToObject<Dictionary<string, object>>() ?? [];
-
-            if (layerQuery is BlendingQuery blendingQuery)
-            {
-                blendingQuery.SubLayers = jObject["layers"]?.ToObject<List<LayerQuery>>(serializer) ?? [];
-            }
             return layerQuery;
         }
 

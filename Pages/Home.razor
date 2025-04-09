@@ -1,7 +1,7 @@
 ﻿@page "/"
 <style>
     #app{
-    display: block !important;
+        display: block !important;
     }
 </style>
 
@@ -19,24 +19,27 @@
 </div>
 <div id="home-info">
     <p style="margin: 1rem; font-size: 1.2rem;">
-        Unleash your creativity with our interactive wallpaper generator!
+        Unleash your creativity with our interactive abstract background generator!
         Adjust parameters like color saturation, noise level, symmetry, and geometric intensity using intuitive sliders.
         Choose from curated color palettes or generate your own, specify image dimensions, and export high-resolution PNG files.
         Instantly share your creations and explore an inspiration mode for fresh ideas.
         Developers can integrate our powerful API for automated image generation.
-        Start designing your perfect wallpaper today!
+        Start designing your perfect background today!
     </p>
 
     <div id="gallery">
         <span style="font-size:3rem; font-weight: 400; margin-bottom: 0.5rem;">Gallery</span>
         <div id="gallery-items">
-            @foreach (var (id, image) in gallery)
+            @foreach (var (_id, image) in gallery)
             {
-                <div>
-                    <img style="cursor:pointer;" @onclick="() => {
-                        NavigationManager.NavigateTo(uri + id);
-                }
-    " src="@image" />
+                var id = _id;
+                <div class="gallery-item">
+                    <img src="@image" />
+                    <div class="gallery-item-hover" style="position: relative; bottom:2.4rem; right:1rem; width:fit-content; float: right;">
+                        <button @onclick="() => {NavigationManager.NavigateTo(uri + id);}">
+                            View
+                        </button>
+                    </div>
                 </div>
             }
         </div>
@@ -48,6 +51,7 @@
 @inject NavigationManager NavigationManager
 @code {
     private const string uri = "/gen/gallery:";
+    private string? selectedId = null;
     List<(string id, string image)> gallery = [];
 
     protected override async Task OnInitializedAsync()
