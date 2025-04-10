@@ -1,0 +1,86 @@
+﻿@page "/inspiration"
+<style>
+    #app{
+    display: block !important;
+    }
+</style>
+
+@Home.Header()
+<div id="subheader">
+    <div id="subheader-image-text">
+        <img src="main-back.png" alt="abstract-background" />
+        <span id="img-text">
+            Abstract Images
+        </span>
+    </div>
+</div>
+
+<div id="gallery">
+    <span style="font-size:3rem; font-weight: 400; margin-bottom: 0.5rem;">Random Images</span>
+    <div id="gallery-items">
+        @foreach (var (query, image) in images)
+        {
+            <div class="gallery-item">
+                <img src="@image" />
+                <div class="gallery-item-hover" style="position: relative; bottom:2.4rem; right:1rem; width:fit-content; float: right;">
+                    <button @onclick="async() => await LoadImage(query, image)">
+                        View
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<button @onclick="async () => await LoadMoreImages()">
+    Load More
+</button>
+
+@using System.Text
+@using Newtonsoft.Json;
+@inject IJSRuntime JS
+@inject NavigationManager NavManager
+@code {
+    private const string reqBody = "{\"width\": 320,\"height\": 240,\"count\": 5}";
+    private const string uri = "/gen/session";
+    List<(string query, string image)> images = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMoreImages();
+        StateHasChanged();
+        await LoadMoreImages();
+        StateHasChanged();
+    }
+
+    private async Task LoadMoreImages()
+    {
+        var client = new HttpClient();
+        var uri = Program.BaseApiUrl(NavManager);
+        uri += "/image-generator/query/random?include_metadata=true&include_image=true";
+        var content = new StringContent(reqBody, Encoding.UTF8, "application/json");
+        var response = await client.PostAsync(uri, content);
+        if (response.IsSuccessStatusCode)
+        {
+            var parser = HttpMultipartParser.MultipartFormDataParser.Parse(await response.Content.ReadAsStreamAsync());
+            for (int i = 0; i < parser.Files.Count; i += 2)
+            {
+                var file = parser.Files[i];
+                Stream imageStream = parser.Files[i].Data;
+                Stream jsonStream = parser.Files[i + 1].Data;
+                using (StreamReader reader = new StreamReader(jsonStream))
+                {
+                    var json = reader.ReadToEnd();
+                    var imageSrc = $"data:image/jpg;base64,{Convert.ToBase64String(imageStream.ReadFully())}";
+                    images.Add((json, imageSrc));
+                }
+            }
+        }
+    }
+
+    private async Task LoadImage(string query, string image)
+    {
+        await JS.InvokeVoidAsync("sessionStorage.setItem", "image", image);
+        await JS.InvokeVoidAsync("sessionStorage.setItem", "query", query);
+        NavManager.NavigateTo("/gen/session");
+    }
+}

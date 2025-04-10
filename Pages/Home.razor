@@ -58,7 +58,6 @@
     {
         var client = new HttpClient();
         var uri = Program.BaseApiUrl(NavigationManager);
-        Console.WriteLine(uri);
         uri += "/template-query/all?include_metadata=true&include_image=true&full_metadata=false";
         var response = await client.GetAsync(uri);
         if (response.IsSuccessStatusCode)
@@ -83,6 +82,7 @@
             <Ico Icon="@Icons.Wallpaper" Color="#c6be1b" Size="3"/>
             <a href="/">Home</a>
             <a href="/gen">Generate</a>
+            <a href="/inspiration">Inspiration</a>
         </div>;
     }
 }

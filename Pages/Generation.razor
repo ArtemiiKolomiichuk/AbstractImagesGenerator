@@ -68,41 +68,77 @@
                 {
                     var httpClient = new HttpClient();
                     HttpResponseMessage response;
-                    var id = QId.Split(':')[1];
-                    if (QId.StartsWith("share"))
+                    if (QId.StartsWith("session"))
                     {
-                        response = await httpClient.GetAsync(Program.BaseApiUrl(NavManager) + $"/store-query/{id}?include_metadata=true&include_image=true");
-                    }
-                    else
-                    {
-                        response = await httpClient.GetAsync(Program.BaseApiUrl(NavManager) + $"/template-query/{id}?include_metadata=true&include_image=true");
-                    }
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var parser = HttpMultipartParser.MultipartFormDataParser.Parse(await response.Content.ReadAsStreamAsync());
-                        Stream imageStream = parser.Files[0].Data;
-                        Stream jsonStream = parser.Files[1].Data;
-
-                        using (StreamReader reader = new StreamReader(jsonStream))
+                        try
                         {
-                            var json = reader.ReadToEnd();
-                            blending = (await QueryObject.Deconstruct(NavManager, json)).Value.Item1;
-                            blending.Locked = true;
+                            string? query = await JS.InvokeAsync<string?>("sessionStorage.getItem", "query");
+                            string? image = await JS.InvokeAsync<string?>("sessionStorage.getItem", "image");
+                            if (query != null && image != null)
+                            {
+                                blending = (await QueryObject.Deconstruct(NavManager, query)).Value.Item1;
+                                blending.Locked = true;
+                                
+                                imageSrc = image;
+                                errorMessage = null;
+                                generating = false;
+                            }
+                            else
+                            {
+                                errorMessage = "No saved image found";
+                            }
                             StateHasChanged();
                         }
-
-                        imageSrc = $"data:image/jpg;base64,{Convert.ToBase64String(imageStream.ReadFully())}";
-                        errorMessage = null;
-                        generating = false;
-                        StateHasChanged();
+                        catch (Exception e)
+                        {
+                            errorMessage = "No saved image found";
+                            #if DEBUG
+                                errorMessage = "Getting sessioned image failed (c)\n\n";
+                                errorMessage += e.Message + '\n';
+                                errorMessage += e.StackTrace;
+                            #endif
+                            StateHasChanged();
+                            return;
+                        }
                     }
                     else
                     {
-                        errorMessage = "No saved image found";
-                        #if DEBUG
-                            errorMessage = "Getting saved image failed failed (a)\n\n";
-                            errorMessage += await response.Content.ReadAsStringAsync();
-                        #endif
+                        var id = QId.Split(':')[1];
+                        if (QId.StartsWith("share"))
+                        {
+                            response = await httpClient.GetAsync(Program.BaseApiUrl(NavManager) + $"/store-query/{id}?include_metadata=true&include_image=true");
+                        }
+                        else
+                        {
+                            response = await httpClient.GetAsync(Program.BaseApiUrl(NavManager) + $"/template-query/{id}?include_metadata=true&include_image=true");
+                        }
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var parser = HttpMultipartParser.MultipartFormDataParser.Parse(await response.Content.ReadAsStreamAsync());
+                            Stream imageStream = parser.Files[0].Data;
+                            Stream jsonStream = parser.Files[1].Data;
+
+                            using (StreamReader reader = new StreamReader(jsonStream))
+                            {
+                                var json = reader.ReadToEnd();
+                                blending = (await QueryObject.Deconstruct(NavManager, json)).Value.Item1;
+                                blending.Locked = true;
+                                StateHasChanged();
+                            }
+
+                            imageSrc = $"data:image/jpg;base64,{Convert.ToBase64String(imageStream.ReadFully())}";
+                            errorMessage = null;
+                            generating = false;
+                            StateHasChanged();
+                        }
+                        else
+                        {
+                            errorMessage = "No saved image found";
+                            #if DEBUG
+                                errorMessage = "Getting saved image failed failed (a)\n\n";
+                                errorMessage += await response.Content.ReadAsStringAsync();
+                            #endif
+                        }
                     }
                 }
                 catch (Exception e)
