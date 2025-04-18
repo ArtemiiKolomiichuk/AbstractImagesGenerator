@@ -25,7 +25,7 @@ namespace AbstractImagesGenerator.Misc
         public static explicit operator int(Number n) => (int)n.Value;
         public static implicit operator Number(double i) => new(i);
 
-        public override string ToString() => Value.ToString().Replace(',', '.');
+        public override string ToString() => String.Format("{0:0.00}", Value);
 
         public int CompareTo(object? obj)
         {

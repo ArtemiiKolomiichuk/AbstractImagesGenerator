@@ -1,7 +1,7 @@
 ﻿@page "/inspiration"
 <style>
     #app{
-    display: block !important;
+        display: block !important;
     }
 </style>
 
@@ -79,8 +79,9 @@
 
     private async Task LoadImage(string query, string image)
     {
-        await JS.InvokeVoidAsync("sessionStorage.setItem", "image", image);
-        await JS.InvokeVoidAsync("sessionStorage.setItem", "query", query);
+        await JS.InvokeVoidAsync("localStorage.setItem", "image", image);
+        await JS.InvokeVoidAsync("localStorage.setItem", "query", query);
+        await Task.Delay(100);
         NavManager.NavigateTo("/gen/session");
     }
 }

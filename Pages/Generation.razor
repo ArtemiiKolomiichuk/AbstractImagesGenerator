@@ -72,11 +72,28 @@
                     {
                         try
                         {
-                            string? query = await JS.InvokeAsync<string?>("sessionStorage.getItem", "query");
-                            string? image = await JS.InvokeAsync<string?>("sessionStorage.getItem", "image");
+                            string? query = await JS.InvokeAsync<string?>("localStorage.getItem", "query");
+                            string? image = await JS.InvokeAsync<string?>("localStorage.getItem", "image");
                             if (query != null && image != null)
                             {
-                                blending = (await QueryObject.Deconstruct(NavManager, query)).Value.Item1;
+                                try
+                                {
+                                    blending = (await QueryObject.Deconstruct(NavManager, query)).Value.Item1;
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.Write(e.Message);
+                                    Console.Write(e.StackTrace);
+                                    errorMessage = "Couldn't load image";
+                                    generating = false;
+                                #if DEBUG
+                                    imageSrc = "";
+                                    errorMessage = "Loading image failed (c)\n\n";
+                                    errorMessage += e.Message + '\n';
+                                    errorMessage += e.StackTrace;
+                                #endif
+                                }
+
                                 blending.Locked = true;
                                 
                                 imageSrc = image;
