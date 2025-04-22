@@ -30,17 +30,9 @@
     <div id="gallery">
         <span style="font-size:3rem; font-weight: 400; margin-bottom: 0.5rem;">Gallery</span>
         <div id="gallery-items">
-            @foreach (var (_id, image) in gallery)
+            @foreach (var (id, image) in gallery)
             {
-                var id = _id;
-                <div class="gallery-item">
-                    <img src="@image" />
-                    <div class="gallery-item-hover" style="position: relative; bottom:2.4rem; right:1rem; width:fit-content; float: right;">
-                        <button @onclick="() => {NavigationManager.NavigateTo(uri + id);}">
-                            View
-                        </button>
-                    </div>
-                </div>
+                <GalleryImage Image="@image" QueryId="@id" OnClick="() => {NavigationManager.NavigateTo(uri + id);}" />
             }
         </div>
     </div>
@@ -83,6 +75,7 @@
             <a href="/">Home</a>
             <a href="/gen">Generate</a>
             <a href="/inspiration">Inspiration</a>
+            <a href="/popular">Popular</a>
         </div>;
     }
 }

@@ -20,14 +20,7 @@
     <div id="gallery-items">
         @foreach (var (query, image) in images)
         {
-            <div class="gallery-item">
-                <img src="@image" />
-                <div class="gallery-item-hover" style="position: relative; bottom:2.4rem; right:1rem; width:fit-content; float: right;">
-                    <button @onclick="async() => await LoadImage(query, image)">
-                        View
-                    </button>
-                </div>
-            </div>
+            <GalleryImage Image="@image" Query="@query" OnClick="async() => await LoadImage(query, image)"/>
         }
     </div>
 </div>

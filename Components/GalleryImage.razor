@@ -1,0 +1,63 @@
+﻿<div class="gallery-item">
+    <img src="@Image" />
+    <div class="gallery-item-hover" style="position: relative; bottom:4.4rem; right:1rem; width:fit-content; float: right;">
+        @if (Likes != null)
+        {
+            <span>@Likes</span>
+        }
+        @if (liked)
+        {
+            <button @onclick="async () => 
+                {
+                    if (QueryId == null ? await LikesService.UnLikeRandom(Query) : await LikesService.UnLike(QueryId))
+                    {
+                        liked = false;
+                    }
+                }">
+                Unlike
+            </button>;
+        }
+        else
+        {
+            <button @onclick="async () => 
+                {
+                    if (QueryId == null ? await LikesService.LikeRandom(Query) : await LikesService.Like(QueryId))
+                    {
+                        liked = true;
+                    }
+                }">
+                Like
+            </button>;
+        }
+    </div>
+    <div class="gallery-item-hover" style="position: relative; bottom:2.4rem; right:1rem; width:fit-content; float: right;">
+        <button @onclick="OnClick">
+            View
+        </button>
+    </div>
+</div>
+
+@inject LikesService LikesService
+@code {
+    [Parameter]
+    public string Image { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public int? Likes { get; set; } = null;
+
+    [Parameter]
+    public string? QueryId { get; set; }
+
+    [Parameter]
+    public string? Query { get; set; }
+
+    private bool liked = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        liked = await LikesService.IsLiked(QueryId);
+    }
+}

@@ -1,0 +1,52 @@
+﻿@page "/popular"
+<style>
+    #app{
+    display: block !important;
+    }
+</style>
+
+@Home.Header()
+<div id="subheader">
+    <div id="subheader-image-text">
+        <img src="main-back.png" alt="abstract-background" />
+        <span id="img-text">
+            Abstract Images
+        </span>
+    </div>
+    <a href="/gen">
+        Generate
+    </a>
+</div>
+<div id="gallery">
+    <span style="font-size:3rem; font-weight: 400; margin-bottom: 0.5rem;">Gallery</span>
+    <div id="gallery-items">
+        @foreach (var (image, likes, qId, query) in gallery)
+        {
+            <GalleryImage Image="@image" Likes="likes" QueryId="@qId" OnClick="async() => {await LoadImage(query, image);}" />
+        }
+    </div>
+</div>
+
+
+@using Newtonsoft.Json;
+@inject LikesService LikesService
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@code {
+    private const string uri = "/gen/gallery:";
+    private string? selectedId = null;
+    List<(string image, int likes, string qId, string query)> gallery = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        gallery = await LikesService.GetPopular(1);
+    }
+
+    private async Task LoadImage(string query, string image)
+    {
+        await JS.InvokeVoidAsync("localStorage.setItem", "image", image);
+        await JS.InvokeVoidAsync("localStorage.setItem", "query", query);
+        await Task.Delay(100);
+        NavManager.NavigateTo("/gen/session");
+    }
+}
