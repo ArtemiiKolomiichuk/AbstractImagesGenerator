@@ -84,6 +84,26 @@ namespace AbstractImagesGenerator.Misc
             return JsonConvert.DeserializeObject<List<string>>(await JS.InvokeAsync<string>("localStorage.getItem", "likes") ?? "[]") ?? [];
         }
 
+        public async Task<List<(string image, string id, string query)>> LoadAllLiked()
+        {
+            var likes = await MyLikes();
+            if (likes.Count == 0) return [];
+            List<(string image, string id, string query)> result = [];
+            foreach (var id in likes)
+            {
+                var response = await new HttpClient().SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{Program.BaseApiUrl(NavManager)}/store-query/{id}?include_metadata=true&include_image=true"));
+                if (response.IsSuccessStatusCode)
+                {
+                    var parser = HttpMultipartParser.MultipartFormDataParser.Parse(await response.Content.ReadAsStreamAsync());
+                    Stream imageStream = parser.Files[0].Data;
+                    Stream jsonStream = parser.Files[1].Data;
+                    var json = new StreamReader(jsonStream).ReadToEnd();
+                    result.Add(($"data:image/jpg;base64,{Convert.ToBase64String(imageStream.ReadFully())}", id, json));
+                }
+            }
+            return result;
+        }
+
         public async Task<List<(string image, int likes, string qId, string query)>> GetPopular(int page)
         {
             var response = await new HttpClient().SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{Program.BaseApiUrl(NavManager)}/popular/images?page={page}&page_size=20&include_image=true&include_metadata=true&full_metadata=true"));

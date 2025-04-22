@@ -1,0 +1,48 @@
+﻿@page "/collection"
+<style>
+    #app{
+    display: block !important;
+    }
+</style>
+
+@Home.Header()
+<div id="subheader">
+    <div id="subheader-image-text">
+        <img src="main-back.png" alt="abstract-background" />
+        <span id="img-text">
+            Abstract Images
+        </span>
+    </div>
+</div>
+
+<div id="gallery">
+    <span style="font-size:3rem; font-weight: 400; margin-bottom: 0.5rem;">Collection</span>
+    <div id="gallery-items">
+        @foreach (var (query, id, image) in images)
+        {
+            <GalleryImage Image="@image" Query="@query" QueryId="@id" OnClick="async() => await LoadImage(query, image)"/>
+        }
+    </div>
+</div>
+
+@using System.Text
+@using Newtonsoft.Json;
+@inject IJSRuntime JS
+@inject NavigationManager NavManager
+@inject LikesService LikesService
+@code {
+    List<(string query, string id, string image)> images = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        images = (await LikesService.LoadAllLiked()).Select(l => (l.query, l.id, l.image)).ToList();
+    }
+
+    private async Task LoadImage(string query, string image)
+    {
+        await JS.InvokeVoidAsync("localStorage.setItem", "image", image);
+        await JS.InvokeVoidAsync("localStorage.setItem", "query", query);
+        await Task.Delay(100);
+        NavManager.NavigateTo("/gen/session");
+    }
+}
