@@ -15,18 +15,38 @@ namespace AbstractImagesGenerator.Misc
             FinalBlending = new BlendingQuery(blending.Copy);
         }
 
+        public static QueryObject Deserialize(string str)
+        {
+            var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(str);
+            if (dict.ContainsKey("likes_count"))
+            {
+                var queryObject = JsonConvert.DeserializeObject<QueryObject>(dict["query_full"].ToString());
+                queryObject.Likes = int.Parse(dict["likes_count"].ToString());
+                queryObject.Id = dict["query_id"].ToString();
+                return queryObject;
+            }
+            else
+            {
+                return JsonConvert.DeserializeObject<QueryObject>(str);
+            }
+        }
+
         [JsonProperty("width")]
         public int Width { get; set; } 
 
         [JsonProperty("height")]
         public int Height { get; set; }
 
+        public int Likes { get; set; } = 0;
+
+        public string? Id { get; set; } = null;
+
         [JsonProperty("layer_query")]
         public BlendingQuery FinalBlending { get; set; } 
 
         public static async Task<(Blending, int, int)?> Deconstruct(NavigationManager NavManager, string query)
         {
-            var queryObject = JsonConvert.DeserializeObject<QueryObject>(query);
+            var queryObject = QueryObject.Deserialize(query);
             if (queryObject == null || queryObject.FinalBlending == null) return null;
             var defaulltDrawings = await Drawing.GetLayerOptions(NavManager);
             var defaultBlendings = await Blending.GetLayerOptions(NavManager);
