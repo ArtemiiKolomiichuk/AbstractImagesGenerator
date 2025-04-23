@@ -2,6 +2,7 @@
 @page "/gen/{QId}"
 @using Newtonsoft.Json
 @using System.Text
+@implements IAsyncDisposable
 
 @Home.Header()
 <LayersModal @ref="LayersModal" />
@@ -54,6 +55,8 @@
     private List<string> ResolutionOptions = ["800x600", "1024x1024", "1280x720", "1920x1080", "1920x1200", "2160x1080", "2560x1440", "2560x2560", "3840x2160"];
     private string resolution = "640x480";
 
+    private IJSObjectReference tourModule;
+
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
@@ -95,7 +98,7 @@
                                 }
 
                                 blending.Locked = true;
-                                
+
                                 imageSrc = image;
                                 errorMessage = null;
                                 generating = false;
@@ -180,7 +183,19 @@
             #endif
             StateHasChanged();
         }
-        await JS.InvokeVoidAsync("startTour");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            tourModule = await JS.InvokeAsync<IJSObjectReference>("import", "./tour.js");
+            if (!(await JS.InvokeAsync<string?>("localStorage.getItem", "tour_end") is string ended && ended == "yes"))
+            {
+                await tourModule.InvokeVoidAsync("startTour");
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async void GenerateImage()
@@ -280,6 +295,12 @@
                 SetSeeds(blendingTo.SubLayers, blendingFrom.SubLayers);
             }
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await tourModule.InvokeVoidAsync("stopTour");
+        await tourModule.DisposeAsync();
     }
 
     private async Task<string?> SaveQuery()
