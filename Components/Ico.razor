@@ -1,4 +1,4 @@
-﻿@((MarkupString)(Icon.Replace("height=\"24px\"", $"height=\"{SizeString}\" class=\"{Class}\"").Replace("width=\"24px\"", $"width=\"{SizeString}\"").Replace("\"#\"", $"\"{Color}\"")))
+﻿@((MarkupString)(Icon.Replace("height=\"24px\"", $"height=\"{SizeString}\" class=\"{Class}\"").Replace("width=\"24px\"", $"width=\"{SizeString}\"").Replace("\"#\"", $"\"{Color.Replace("414141", "818181")}\"")))
 
 @code {
     [Parameter]

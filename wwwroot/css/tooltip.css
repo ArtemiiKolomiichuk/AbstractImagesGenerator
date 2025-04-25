@@ -32,3 +32,9 @@
     border-style: solid;
     border-color: #555 transparent transparent transparent;
 }
+
+.tooltip-ico{
+    display: flex;
+    padding-top: 3px;
+    padding-right: 3px;
+}

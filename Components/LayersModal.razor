@@ -9,7 +9,7 @@
                         <h3>Blendings</h3>
                         @foreach (var layer in Blendings)
                         {
-                            <div style="display: flex; align-items: baseline;">
+                            <div style="display: flex; align-items: center;">
                                 <Tooltip Text="@layer.Description"/>
                                 <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
                             </div>
@@ -20,7 +20,7 @@
                         <h3>Drawings</h3>
                         @foreach (var layer in Drawings)
                         {
-                            <div style="display: flex; align-items: baseline;">
+                            <div style="display: flex; align-items: center;">
                                 <Tooltip Text="@layer.Description" />
                                 <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
                             </div>
@@ -34,7 +34,7 @@
                 <div style="display: flex; flex-direction: column;">
                     @foreach (var layer in Blendings)
                     {
-                        <div style="display: flex; align-items: baseline;">
+                        <div style="display: flex; align-items: center;">
                             <Tooltip Text="@layer.Description" />
                             <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
                         </div>

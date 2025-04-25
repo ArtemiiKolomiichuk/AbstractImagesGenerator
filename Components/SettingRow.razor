@@ -1,31 +1,32 @@
 ﻿
-<div class="setting-row">
-    <div class="@(Inherited ? "setting-row-title inherited" : "setting-row-title")" style="padding-right:1em">
+<div class="setting-row" style="@((Setting.VisibleType == PropertyDisplayType.Slider ? "margin: -1px 0 -10px 0;;" : ""))">
+    <div class="@(Inherited ? "setting-row-title inherited" : "setting-row-title")" style="padding-right:1em;">
         <Tooltip Text="@Setting.Description">@Setting.Title</Tooltip>
     </div>
     @switch (Setting.VisibleType)
     {
         case PropertyDisplayType.Slider:
             {
-                <input type="range" min="@(Setting.MinValue ?? 0)" max="@(Setting.MaxValue ?? 0)" 
-                step="@(Setting.DataType == PropertyValueType.Float ? ((Number)0.01).ToString() : 1)" 
-                value="@(Setting.Value switch {
-                        FloatValue floatValue => (Number)floatValue.Value,
-                        IntValue intValue => intValue.Value
-                    })"
-                @onchange ="(e) => 
-                    { 
-                        double val = (double)(new Number(e.Value.ToString()));
-                        Setting.Value = Setting.DataType switch
-                        {
-                            PropertyValueType.Float => new FloatValue(val),
-                            PropertyValueType.Int => (int)val,
-                            _ => throw new NotImplementedException()
-                        };
-                        StateHasChanged();
-                        Update(); 
-                    }"
-                style="margin: 0.4rem; width: 6rem;" />
+                <Slider Min="@((Number)Convert.ToDouble(Setting.MinValue ?? 0))" 
+                        Max="@((Number)Convert.ToDouble(Setting.MaxValue ?? 0))"
+                        Step="@(Setting.DataType == PropertyValueType.Float ? (Number)0.01 : new Number(1))" 
+                        Value="Setting.Value switch{
+                            FloatValue floatValue => (Number)floatValue.Value,
+                            IntValue intValue => (Number)intValue.Value
+                        }"
+                        OnChange="(v) => {
+                            double val = (double)v;
+                            if(val == Setting.Value switch {FloatValue floatValue => floatValue.Value, IntValue intValue => intValue.Value})
+                                return;
+                            Setting.Value = Setting.DataType switch
+                            {
+                                PropertyValueType.Float => new FloatValue(val),
+                                PropertyValueType.Int => (int)val,
+                                _ => throw new NotImplementedException()
+                            };
+                            StateHasChanged();
+                            Update(); 
+                        }"/>
             }
             break;
         case PropertyDisplayType.RangeSlider:
@@ -123,7 +124,7 @@
                                         Setting.Value = list;
                                         Update();
                                     }
-                                    }
+                                }
                             "/>
                             @if(list.Values.Count > 1)
                             {
@@ -137,11 +138,11 @@
                         @if (expendable)
                         {
                             <span @onclick="() => { list.Values.Add(RandomColor()); Setting.Value = list; Update(); }" style="height: 2rem;-webkit-user-select: none;" title="Add Color">
-                                <Ico Class="icon-button pink" Icon="@Icons.Add" Size="2" />
+                                <Ico Class="icon-button grey" Icon="@Icons.Add" Size="2" Color="#414141"/>
                             </span>
                         }
                         <span @onclick="() => Setting.Value = RandomPalette(list.Values.Count).ToList()" style="height: 2rem;-webkit-user-select: none;" title="Randomize Colors">
-                            <Ico Class="icon-button pink" Icon="@Icons.Shuffle" Size="2" />
+                            <Ico Class="icon-button grey" Icon="@Icons.Shuffle" Size="2" Color="#414141"/>
                         </span>
                     </Footer>
                 </SortableList>
