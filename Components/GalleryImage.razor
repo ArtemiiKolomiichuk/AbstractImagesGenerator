@@ -1,39 +1,52 @@
-﻿<div class="gallery-item">
-    <img src="@Image" />
-    <div class="gallery-item-hover" style="position: relative; bottom:4.4rem; right:1rem; width:fit-content; float: right;">
-        @if (Likes != null)
-        {
-            <span>@Likes</span>
-        }
-        @if (liked)
-        {
-            <button @onclick="async () => 
+﻿<div class="stack gallery-item prevent-select" style="cursor: pointer;">
+    <img class="layer back" src="@Image" @onclick="@OnClick" />
+    <div class="layer front">
+        <div class="gallery-item-hover" style=@(Likes == null ? "padding-top: 6px;" : "display: flex; align-items: center; padding-top: 6px;")>
+            <div class="stack heart-container" style="width:3rem; height:3rem;">
+                <div class="layer" style="z-index:3;" @onclick:stopPropagation @onclick="async () =>
                 {
-                    if (QueryId == null ? await LikesService.UnLikeRandom(Query) : await LikesService.UnLike(QueryId))
+                    if (liked)
                     {
-                        liked = false;
+                        if (QueryId == null ? await LikesService.UnLikeRandom(Query!) : await LikesService.UnLike(QueryId))
+                        {
+                            liked = false;
+                            if(Likes != null)
+                            {
+                                Likes--;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (QueryId == null ? await LikesService.LikeRandom(Query!) : await LikesService.Like(QueryId))
+                        {
+                            liked = true;
+                            if(Likes != null)
+                            {
+                                Likes++;
+                            }
+                        }
                     }
                 }">
-                Unlike
-            </button>;
-        }
-        else
-        {
-            <button @onclick="async () => 
+                    @((MarkupString)((Icons.HeartFilled)
+                    .Replace("height=\"24px\"", $"height=\"3.5rem\" class=\"{(liked ? "heart-fill" : "heart-empty")}\"")
+                    .Replace("width=\"24px\"", $"width=\"3.5rem\" style=\"filter: drop-shadow(2px 2px 1px rgb(0 0 0 / 0.2));\"")))
+                </div>
+                @if (Likes != null)
                 {
-                    if (QueryId == null ? await LikesService.LikeRandom(Query) : await LikesService.Like(QueryId))
-                    {
-                        liked = true;
-                    }
-                }">
-                Like
-            </button>;
-        }
+                    <span class="layer likes-num">@Likes</span>
+                }
+            </div>
+        </div>
+    <div class="gallery-item-hover" style="pointer-events: none; position: relative; bottom: -8px;">
+            <span style="margin-bottom: -11px;    stroke: #afafaf;
+    stroke-width: 3rem;
+    filter: opacity(0.4);">
+            @((MarkupString)((Icons.Paint)
+            .Replace("height=\"24px\"", $"height=\"3rem\"")
+            .Replace("width=\"24px\"", $"width=\"3rem\" style=\"filter: drop-shadow(2px 2px 1px rgb(0 0 0 / 0.2));\"")))
+        </span>
     </div>
-    <div class="gallery-item-hover" style="position: relative; bottom:2.4rem; right:1rem; width:fit-content; float: right;">
-        <button @onclick="OnClick">
-            View
-        </button>
     </div>
 </div>
 

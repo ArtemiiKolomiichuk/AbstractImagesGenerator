@@ -69,3 +69,10 @@
     user-select: none; 
     -webkit-touch-callout: none; 
 }
+
+.gallery-page {
+    margin-top: 1rem !important;
+    max-width: 70vw;
+    position: relative;
+    left: 15%;
+}
