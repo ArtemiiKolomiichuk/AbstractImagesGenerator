@@ -1,0 +1,67 @@
+﻿<div class="range-slider">
+    <span class="value-label mid-label" style="@($"left: calc({ValuePercentage}% + {(Number)(ValuePercentage.Value / 100 * -34 + 6)}px);")">@Value</span>
+
+    <input type="range"
+           min="@Min.ToString()"
+           max="@Max.ToString()"
+           step="@Step.ToString()"
+           value="@Value.ToString()"
+           @onchange="e => Value = new(e.Value.ToString())"
+           class="slider mid-slider" />
+
+    <div class="slider-track"></div>
+</div>
+
+@code {
+    [Parameter]
+    public Number Step { get; set; }
+
+    [Parameter]
+    public Number Max { get; set; }
+
+    [Parameter]
+    public Number Min { get; set; }
+
+    private Number _value = 0;
+
+    [Parameter]
+    public Number Value
+    {
+        get => _value;
+        set
+        {
+            if (value.CompareTo(Min) < 0)
+            {
+                _value = Min;
+            }
+            else if (value.CompareTo(Max) > 0)
+            {
+                _value = Max;
+            }
+            else
+            {
+                _value = value;
+            }
+            StateHasChanged();
+            OnChange?.Invoke(_value);
+        }
+    }
+
+    [Parameter]
+    public Action<Number>? OnChange { get; set; }
+
+    public Number ValuePercentage => (Value.Value - Min.Value) / (Max.Value - Min.Value) * 100;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        if (Value.CompareTo(Min) < 0)
+        {
+            Value = Min;
+        }
+        else if (Value.CompareTo(Max) > 0)
+        {
+            Value = Max;
+        }
+    }
+}

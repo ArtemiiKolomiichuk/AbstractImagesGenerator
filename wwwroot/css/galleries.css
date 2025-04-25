@@ -1,0 +1,71 @@
+﻿.stack {
+    position: relative;
+    height: 20rem;
+}
+
+.layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.back {
+    z-index: 1;
+}
+
+.front {
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.heart-container {
+    pointer-events: auto;
+}
+
+.gallery-item-hover {
+    padding: 0.5rem;
+}
+
+.likes-num {
+    pointer-events: none;
+    z-index: 4;
+    font-size: 1.1rem;
+    top: -3px;
+    left: 1px;
+    place-content: center;
+    text-align: center;
+    color: #5f0b5e;
+}
+
+.heart-back {
+    height: 3.5rem;
+    width: 3.5rem;
+}
+
+.heart-fill {
+    stroke: #be4abd;
+    stroke-width: 3rem;
+    fill: #d968d8;
+    scale: 0.85;
+}
+
+.heart-empty {
+    stroke: #d1d1d1;
+    stroke-width: 3rem;
+    fill: #f1f1f1;
+    scale: 0.85;
+}
+
+.prevent-select {
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none; 
+    -webkit-touch-callout: none; 
+}
