@@ -16,8 +16,18 @@
                 <button class="bttn" @onclick="GenerateImage" disabled="@generating">Generate Image</button>
                 <div class="download-container">
                     <a class="download" title="Download" href="@imageSrc" download="image.png">
-                        <Ico Class="download-ico" Icon="@Icons.Download" Size="2.6" Color="#cccccc" />
+                        <Ico Class="generation-button-ico" Icon="@Icons.Download" Size="2.6" Color="#cccccc" />
                     </a>
+                    <span class="like" @onclick="async() => {
+                            //TODO: if already liked, revert
+                            await LikesService.LikeRandom(query: JsonConvert.SerializeObject(
+                                    new QueryObject(
+                                    int.Parse(resolution.Split('x')[0]), 
+                                    int.Parse(resolution.Split('x')[1]), 
+                                    blending)));
+                        }">
+                        <Ico Class="generation-button-ico" Icon="@Icons.HeartFilledIco" Size="2.6" Color="#cccccc" />
+                    </span>
                     <span class="share" @onclick="async() => {
                             var id = await SaveQuery();
                             if (id != null)
@@ -25,7 +35,7 @@
                                 await JS.InvokeVoidAsync(saveToClipboardComm, id);
                             }
                         }">
-                        <Ico Class="share-ico" Icon="@Icons.Share" Size="2.6" Color="#cccccc" />
+                        <Ico Class="generation-button-ico" Icon="@Icons.Share" Size="2.6" Color="#cccccc" />
                     </span>
                 </div>
             </div>
@@ -41,6 +51,7 @@
 
 @inject IJSRuntime JS
 @inject NavigationManager NavManager
+@inject LikesService LikesService
 @code{
     [Parameter]
     public string? QId { get; set; } = null;

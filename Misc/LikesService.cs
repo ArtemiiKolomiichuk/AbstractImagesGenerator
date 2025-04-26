@@ -41,6 +41,10 @@ namespace AbstractImagesGenerator.Misc
             {
                 var id = JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())?["query_id"];
                 var likes = await MyLikes();
+                if (likes.Contains(id))
+                {
+                    return true;
+                }
                 likes.Add(id);
                 await JS.InvokeVoidAsync("localStorage.setItem", "likes", JsonConvert.SerializeObject(likes));
                 return true;

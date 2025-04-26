@@ -76,8 +76,6 @@ window.infiniteScrollHandler = {
         const galleryElement = document.getElementById('gallery');
         if (galleryElement) {
             const galleryRect = galleryElement.getBoundingClientRect();
-            console.log(galleryRect.bottom);
-            console.log(window.innerHeight);
             if (galleryRect.bottom <= window.innerHeight + 200) {
                 this.dotNetHelper.invokeMethodAsync('OnScrollToBottom');
             }
