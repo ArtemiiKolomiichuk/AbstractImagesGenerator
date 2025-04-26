@@ -16,7 +16,6 @@ window.copyToClipboard = (text) => {
     });
 };
 
-//TEST
 function showTooltip(wrapperId, targetId) {
     const wrapper = document.getElementById(wrapperId);
     const targetElement = document.getElementById(targetId);
@@ -35,25 +34,23 @@ function showTooltip(wrapperId, targetId) {
 
     const rect = targetElement.getBoundingClientRect();
 
-    // Position the tooltip
     tooltipText.style.position = 'fixed';
     tooltipText.style.top = `${rect.top - tooltipText.offsetHeight}px`;
     tooltipText.style.left = `${rect.left + (rect.width / 2)}px`;
     tooltipText.style.visibility = 'visible';
 
-    // Hide the tooltip on any action
     const hideOnAction = () => {
         tooltipText.style.visibility = 'hidden';
         window.removeEventListener('scroll', hideOnAction);
         window.removeEventListener('click', hideOnAction);
         window.removeEventListener('keydown', hideOnAction);
-        document.removeEventListener('scroll', hideOnAction, true); // Capture inner scrolls
+        document.removeEventListener('scroll', hideOnAction, true); 
     };
 
     window.addEventListener('scroll', hideOnAction);
     window.addEventListener('click', hideOnAction);
     window.addEventListener('keydown', hideOnAction);
-    document.addEventListener('scroll', hideOnAction, true); // Capture inner scrolls
+    document.addEventListener('scroll', hideOnAction, true); 
 }
 
 function hideTooltip(wrapperId) {
@@ -63,3 +60,35 @@ function hideTooltip(wrapperId) {
         tooltipText.style.visibility = 'hidden';
     }
 }
+
+window.infiniteScrollHandler = {
+    dotNetHelper: null,
+    scrollHandler: null,
+
+    initialize: function (dotNetHelper) {
+        this.dotNetHelper = dotNetHelper;
+
+        this.scrollHandler = this.handleScroll.bind(this);
+        window.addEventListener('scroll', this.scrollHandler);
+    },
+
+    handleScroll: function () {
+        const galleryElement = document.getElementById('gallery');
+        if (galleryElement) {
+            const galleryRect = galleryElement.getBoundingClientRect();
+            console.log(galleryRect.bottom);
+            console.log(window.innerHeight);
+            if (galleryRect.bottom <= window.innerHeight + 200) {
+                this.dotNetHelper.invokeMethodAsync('OnScrollToBottom');
+            }
+        }
+    },
+
+    dispose: function () {
+        if (this.scrollHandler) {
+            window.removeEventListener('scroll', this.scrollHandler);
+            this.scrollHandler = null;
+        }
+        this.dotNetHelper = null;
+    }
+};
