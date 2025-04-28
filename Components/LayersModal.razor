@@ -2,37 +2,21 @@
 {
     <div class="modal-overlay" @onclick="() => CloseModal(null)">
         <div class="modal-content" @onclick:stopPropagation="true">
-            @if(Drawings?.Count > 0)
-            {
-                <div style="display: flex; flex-direction: row;">
-                    <div style="display: flex;flex-direction: column; margin-right: 1.4rem;">
-                        <h3>Blendings</h3>
-                        @foreach (var layer in Blendings)
-                        {
-                            <div style="display: flex; align-items: center;">
-                                <Tooltip Text="@layer.Description"/>
-                                <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
-                            </div>
-                        }
+            <h3>Blendings</h3>
+            <div>
+                @foreach (var layer in Blendings)
+                {
+                    <div style="display: flex; align-items: center;">
+                        <Tooltip Text="@layer.Description" />
+                        <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
                     </div>
-
-                    <div style="display: flex;flex-direction: column;">
-                        <h3>Drawings</h3>
-                        @foreach (var layer in Drawings)
-                        {
-                            <div style="display: flex; align-items: center;">
-                                <Tooltip Text="@layer.Description" />
-                                <span class="modal-item" @onclick="() => CloseModal(layer)">@layer.Title</span>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-            else
+                }
+            </div>
+            @if (Drawings?.Count > 0)
             {
-                <h3>Blendings</h3>
-                <div style="display: flex; flex-direction: column;">
-                    @foreach (var layer in Blendings)
+                <h3 style="padding-top: 1rem;">Drawings</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 0.4rem;">
+                    @foreach (var layer in Drawings)
                     {
                         <div style="display: flex; align-items: center;">
                             <Tooltip Text="@layer.Description" />
@@ -57,8 +41,8 @@
 
     public void SetLayers(Blending[] blendings, Drawing[] drawings)
     {
-        Blendings = [..blendings];
-        Drawings = [..drawings];
+        Blendings = new(blendings);
+        Drawings = new(drawings);
     }
 
     public Task<Layer?> ShowAsync()
