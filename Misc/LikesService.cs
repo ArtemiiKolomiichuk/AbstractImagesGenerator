@@ -43,12 +43,47 @@ namespace AbstractImagesGenerator.Misc
                 var likes = await MyLikes();
                 if (likes.Contains(id))
                 {
+                    await new HttpClient().PutAsync(
+                          $"{Program.BaseApiUrl(NavManager)}/dislike/query-full?full_metadata=false",
+                          new StringContent(query, Encoding.UTF8, "application/json"));
                     return true;
                 }
                 likes.Add(id);
                 await JS.InvokeVoidAsync("localStorage.setItem", "likes", JsonConvert.SerializeObject(likes));
                 return true;
             }
+            return false;
+        }
+
+        public async Task<bool> LikeInGallery(string query)
+        {
+            async Task Alert(string m) => await JS.InvokeVoidAsync("alert", m);
+            var response = await new HttpClient().PutAsync(
+                 $"{Program.BaseApiUrl(NavManager)}/like/query-full?full_metadata=false",
+                 new StringContent(query, Encoding.UTF8, "application/json"));
+            if (response.IsSuccessStatusCode)
+            {
+                var id = JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())?["query_id"];
+                var likes = await MyLikes();
+                if (likes.Contains(id))
+                {
+                    await new HttpClient().PutAsync(
+                          $"{Program.BaseApiUrl(NavManager)}/dislike/query-full?full_metadata=false",
+                          new StringContent(query, Encoding.UTF8, "application/json"));
+                    await new HttpClient().PutAsync(
+                          $"{Program.BaseApiUrl(NavManager)}/dislike/query-full?full_metadata=false",
+                          new StringContent(query, Encoding.UTF8, "application/json"));
+                    likes.Remove(id);
+                    await SetLikes(likes);
+                    await Alert("Image removed from collection");
+                    return true;
+                }
+                likes.Add(id);
+                await JS.InvokeVoidAsync("localStorage.setItem", "likes", JsonConvert.SerializeObject(likes));
+                await Alert("Image added to collection");
+                return true;
+            }
+            await Alert("Couldn't connect to the server");
             return false;
         }
 
@@ -110,7 +145,7 @@ namespace AbstractImagesGenerator.Misc
 
         public async Task<List<(string image, int likes, string qId, string query)>> GetPopular(int page)
         {
-            var response = await new HttpClient().SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{Program.BaseApiUrl(NavManager)}/popular/images?page={page}&page_size=20&include_image=true&include_metadata=true&full_metadata=true"));
+            var response = await new HttpClient().SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{Program.BaseApiUrl(NavManager)}/popular/images?page={page}&page_size=50&include_image=true&include_metadata=true&full_metadata=true"));
             if (response.IsSuccessStatusCode)
             {
                 var parser = HttpMultipartParser.MultipartFormDataParser.Parse(await response.Content.ReadAsStreamAsync());

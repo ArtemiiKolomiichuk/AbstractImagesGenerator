@@ -19,8 +19,7 @@
                         <Ico Class="generation-button-ico" Icon="@Icons.Download" Size="2.6" Color="#cccccc" />
                     </a>
                     <span class="like" @onclick="async() => {
-                            //TODO: if already liked, revert
-                            await LikesService.LikeRandom(query: JsonConvert.SerializeObject(
+                            await LikesService.LikeInGallery(query: JsonConvert.SerializeObject(
                                     new QueryObject(
                                     int.Parse(resolution.Split('x')[0]), 
                                     int.Parse(resolution.Split('x')[1]), 
