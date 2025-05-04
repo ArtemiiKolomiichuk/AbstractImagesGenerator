@@ -2,17 +2,28 @@
 export function startTour() {
     localStorage.removeItem("tour_current_step");
     localStorage.removeItem("tour_end");
-    tour = new Tour({
-        template: `<div class='popover tour tour-tour-0'>
+    const actionlessTemplate = `<div class='popover tour tour-tour-0'>
             <div class= 'arrow' ></div>
-            <h3 class='popover-title'></h3>
-            <div class='popover-content'></div>
-            <div class='popover-navigation'>
-                <button class='btn btn-default' data-role='prev'>« Prev</button>
-                <button id="tour-next" class='btn btn-default' data-role='next'>Next »</button>
-                <button class='btn btn-sm btn-default' data-role='end'>End tour</button>
+            <div class='tour-header'>
+                <h3 class='popover-title'></h3>
+                <button class='btn btn-sm btn-default tour-end' data-role='end'>X</button>
             </div>
-          </div>`,
+            <div class='popover-content'></div>
+          </div>`;
+    const nextTemplate = `<div class='popover tour tour-tour-0'>
+        <div class='arrow' ></div>
+        <div class='tour-header'>
+            <h3 class='popover-title'></h3>
+            <button class='btn btn-sm btn-default tour-end' data-role='end'>X</button>
+        </div>
+        <div class='popover-content'></div>
+        <div class='popover-navigation'>
+                <button id="tour-next" class='bttn' data-role='next'>Next »</button>
+            </div>
+    </div>`;
+
+    tour = new Tour({
+        template: actionlessTemplate,
         steps: [
             {
                 element: "#final-blending-change-type",
@@ -20,14 +31,6 @@ export function startTour() {
                 content: "Blendings merge it's sublayers into an image. Click here to select type of the final blending.",
                 placement: "auto left",
                 backdrop: true,
-                template: `<div class='popover tour'>
-                    <div class= 'arrow' ></div>
-                      <h3 class='popover-title'></h3>
-                      <div class='popover-content'></div>
-                      <div class='popover-navigation'>
-                        <button class='btn btn-default' data-role='end'>End tour</button>
-                      </div>
-                    </div >`,
                 onShown: function (tour) {
                     $('#final-blending-change-type').one('click', function () {
                         $('#final-blending-change-type').off('click');
@@ -62,6 +65,8 @@ export function startTour() {
             {
                 element: ".modal-content:eq(0)",
                 title: "Blendings & Drawings",
+                template: nextTemplate,
+                reflex: true,
                 content: "There are different options for sublayers. You can add blendings or drawings. Unlike blendings, drawings don't have sublayers. Click 'next'.",
                 placement: "auto left",
                 backdrop: true,
@@ -70,6 +75,7 @@ export function startTour() {
             {
                 element: ".tooltip-ico:eq(0)",
                 title: "Tooltip",
+                template: nextTemplate,
                 content: "If you're unsure about what these algorithms do, you can always hover over the tooltip icon for more information. Click 'next'.",
                 placement: "auto left",
                 backdrop: true,
@@ -85,16 +91,17 @@ export function startTour() {
             },
             {
                 element: ".setting-row:eq(0)",
-                title: "Parameters of blending part one",
+                title: "Parameters of blending 2",
+                template: nextTemplate,
                 content: "There are two types of blending parameters: those that affect the blending algorithm itself, and those that are applied to each individual sublayer. The parameters shown here influence the blending algorithm—specifically, they control the number of waves generated for later distribution.",
                 reflex: true,
                 placement: "auto left",
                 backdrop: true,
-                
             },
             {
                 element: ".setting-row:eq(5)",
-                title: "Parameters of blending part two",
+                title: "Parameters of blending 2",
+                template: nextTemplate,
                 content: "The parameters shown here are used by the blending to determine how sublayers are processed. Specifically in this case, they define the weights assigned to algorithm, which are then used to distribute zones accordingly.",
                 reflex: true,
                 placement: "auto left",
@@ -104,6 +111,7 @@ export function startTour() {
             {
                 element: ".settings:eq(0)",
                 title: "Parameters of layers",
+                template: nextTemplate,
                 content: "Each layer has its own parameters that define how it is generated. These are primarily controlled by sliders, but occasionally you may encounter combo boxes and checkboxes as well.",
                 reflex: true,
                 placement: "auto left",
@@ -128,7 +136,7 @@ export function startTour() {
             {
                 element: ".icon-button:eq(8)",
                 title: "Parameters of layers - Color",
-                content: "You can also randomize the colors you've already added by clicking this button. Go ahead and click it.",
+                content: "Click here to randomize the colors you've already added.",
                 reflex: true,
                 placement: "auto left",
                 backdrop: true,
@@ -174,8 +182,9 @@ export function startTour() {
             {
                 element: ".color-modal-content:eq(0)",
                 title: "Parameters of layers - Color",
+                template: nextTemplate,
                 content: "Here you can change the selected color. If you're above the minimum number of colors required by the algorithm, you can also delete this color. Click 'next'.",
-                reflex: true,
+                reflex: false,
                 placement: "auto left",
                 backdrop: true,
             },
@@ -183,8 +192,9 @@ export function startTour() {
             {
                 element: ".drag-handle:eq(1)",
                 title: "Parameters of layers - Color",
+                template: nextTemplate,
                 content: "You can also rearrange the colors if needed. Click 'next'.",
-                reflex: true,
+                reflex: false,
                 placement: "auto left",
                 backdrop: true,
             },
@@ -192,8 +202,9 @@ export function startTour() {
             {
                 element: ".setting-row-title:eq(1)",
                 title: "Parameters of layers",
+                template: nextTemplate,
                 content: "If you're unsure what a specific layer parameter does, you can always hover over its name to see a tooltip with more information.",
-                reflex: true,
+                reflex: false,
                 placement: "auto left",
                 backdrop: true,
             },
@@ -217,9 +228,17 @@ export function startTour() {
             },
 
             {
+                element: ".editing-title:eq(0)",
+                title: "Rename Layer",
+                content: "You have ability to rename layer.",
+                reflex: true,
+                placement: "auto left",
+                backdrop: true,
+            },
+            {
                 element: ".icon-button:eq(4)",
                 title: "Copy layer",
-                content: "Also you can copy layer if needed.",
+                content: "You can duplicate layer with all the parameters.",
                 reflex: true,
                 placement: "auto left",
                 backdrop: true,
@@ -227,7 +246,7 @@ export function startTour() {
                     const checkModal = () => {
                         const modal = document.querySelectorAll(".icon-button")[10];
                         if (modal && modal.offsetParent !== null) {
-                            tour.goTo(20);
+                            tour.goTo(21);
                         } else {
                             setTimeout(checkModal, 200);
                         }
@@ -254,7 +273,7 @@ export function startTour() {
                 backdrop: true,
                 onNext: function (tour) {
                     setTimeout(() => {
-                        tour.goTo(22);
+                        tour.goTo(23);
                     }, 300)
                 }
             },
@@ -271,6 +290,7 @@ export function startTour() {
             {
                 element: ".layer-card:eq(1)",
                 title: "Layers and blendings",
+                template: nextTemplate,
                 content: "As you can see layers that generate images are blue. Click 'next'.",
                 reflex: true,
                 placement: "auto right",
@@ -280,6 +300,7 @@ export function startTour() {
             {
                 element: ".layer-card:eq(2)",
                 title: "Layers and blendings",
+                template: nextTemplate,
                 content: "As you can see layers that blend images are red. Click 'next'.",
                 reflex: true,
                 placement: "auto right",
@@ -295,7 +316,7 @@ export function startTour() {
                 backdrop: true,
                 onNext: function (tour) {
                     setTimeout(() => {
-                        tour.goTo(26);
+                        tour.goTo(27);
                     }, 800)
                 }
             },
@@ -309,7 +330,7 @@ export function startTour() {
                 backdrop: true,
                 onNext: function (tour) {
                     setTimeout(() => {
-                        tour.goTo(27);
+                        tour.goTo(28);
                     }, 300)
                 }
             },
@@ -341,7 +362,7 @@ export function startTour() {
                 backdrop: true,
                 onNext: function (tour) {
                     setTimeout(() => {
-                        tour.goTo(30);
+                        tour.goTo(31);
                     }, 300)
                 }
             },
@@ -358,6 +379,7 @@ export function startTour() {
             {
                 element: ".drag-handle:eq(4)",
                 title: "Rearrange layer",
+                template: nextTemplate,
                 content: "You can rearrange layers using this handle.",
                 reflex: true,
                 placement: "auto left",
@@ -367,8 +389,9 @@ export function startTour() {
             {
                 element: ".layer-card:eq(0)",
                 title: "Rearrange layer",
+                template: nextTemplate,
                 content: "Drag in Celular pattern layer in Transparency blending under Cosmic flow and click 'next'.",
-                reflex: true,
+                reflex: false,
                 placement: "auto left",
                 backdrop: true,
             },
@@ -383,6 +406,15 @@ export function startTour() {
             },
 
             {
+                element: ".selector:eq(0)",
+                title: "Select size",
+                content: "Select the size you want",
+                reflex: true,
+                placement: "auto left",
+                backdrop: true,
+            },
+
+            {
                 element: ".bttn:eq(0)",
                 title: "Generate image",
                 content: "Lets generate our image",
@@ -391,33 +423,16 @@ export function startTour() {
                 backdrop: true,
                 onNext: function (tour) {
                     setTimeout(() => {
-                        tour.goTo(35);
+                        tour.goTo(37);
                     }, 300)
                 }
             },
 
             {
-                element: ".generation-button-ico:eq(0)",
-                title: "Download image",
-                content: "By clicking on this button you can download your image",
-                reflex: true,
-                placement: "auto left",
-                backdrop: true,
-            },
-
-            {
-                element: ".generation-button-ico:eq(1)",
-                title: "Add to collection",
-                content: "By clicking on this button you can add image to collection",
-                reflex: true,
-                placement: "auto left",
-                backdrop: true,
-            },
-
-            {
-                element: ".generation-button-ico:eq(2)",
-                title: "Share image",
-                content: "By clicking on this button you can get link to share image",
+                element: ".download-container:eq(0)",
+                title: "Other actions",
+                template: nextTemplate,
+                content: "You can download, like and share your image",
                 reflex: true,
                 placement: "auto left",
                 backdrop: true,
@@ -435,9 +450,9 @@ export function startTour() {
             {
                 element: ".bttn:eq(0)",
                 title: "That's all!",
-                content: "That's all! Now you can try regenerating the image with locks enabled and then without, to see the difference in results.",
-                reflex: true,
+                content: "That's all! Now you can try regenerating the image with locks enabled and then without to see the difference in results.",
                 placement: "auto left",
+                reflex:true,
                 backdrop: true,
             },
         ]

@@ -28,7 +28,7 @@
                 }
                 else
                 {
-                    <div style="display: flex; align-items:center;height: 1.4rem; margin-top: 3px;" @onfocusout="() => {editingTitle = false; StateHasChanged();}">
+                    <div style="display: flex; align-items:center;height: 1.4rem; margin-top: 3px;" class="editing-title" @onfocusout="() => {editingTitle = false; StateHasChanged();}">
                         <input @ref="editTitleInput" type="text" @bind-value="Layer.Title" @onsubmit="() => { editingTitle = false; StateHasChanged(); }" @onfocusout="() => { editingTitle = false; StateHasChanged(); }">
                     </div>
                 }

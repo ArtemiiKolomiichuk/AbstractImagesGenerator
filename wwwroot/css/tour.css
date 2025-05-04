@@ -1,0 +1,34 @@
+﻿.tour-end {
+    margin: 5px;
+    padding: 1px 8px;
+    font-size: medium;
+    border: none;
+    outline: none;
+    background-color: #d1d1d1;
+    color: #0c0000;
+}
+
+.tour-header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #ebebeb;
+}
+
+.popover-title {
+    width: -webkit-fill-available;
+    text-transform: capitalize;
+    background-color: #ffffff00;
+    border-bottom: none;
+}
+
+#tour-next{
+
+}
+
+.popover-navigation {
+    padding-top: 0 !important;
+    overflow: visible !important;
+    display: flex;
+    flex-direction: row-reverse;
+}
